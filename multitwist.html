@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MultiTwist AI</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    display:flex;
+    height:100vh;
+    background:#0f172a;
+    color:white;
+}
+
+/* Sidebar */
+.sidebar{
+    width:280px;
+    background:#111827;
+    padding:15px;
+    border-right:1px solid #333;
+}
+
+.new-chat{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.history{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.history-item{
+    padding:12px;
+    background:#1f2937;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* Main */
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+
+/* Header */
+.header{
+    height:70px;
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    padding:0 25px;
+    border-bottom:1px solid #333;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:bold;
+    color:#60a5fa;
+}
+
+/* Chat */
+.chat-container{
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.message{
+    max-width:75%;
+    padding:12px 15px;
+    margin:10px 0;
+    border-radius:12px;
+}
+
+.user{
+    background:#2563eb;
+    margin-left:auto;
+}
+
+.ai{
+    background:#1e293b;
+}
+
+/* Input */
+.input-area{
+    display:flex;
+    padding:15px;
+    border-top:1px solid #333;
+}
+
+input{
+    flex:1;
+    padding:14px;
+    border:none;
+    outline:none;
+    border-radius:10px;
+    background:#1f2937;
+    color:white;
+}
+
+button.send{
+    margin-left:10px;
+    padding:14px 20px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <button class="new-chat">+ New Chat</button>
+
+    <div class="history">
+        <div class="history-item">What is AI?</div>
+        <div class="history-item">Physics Question</div>
+        <div class="history-item">Latest Technology</div>
+    </div>
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <div class="logo">MultiTwist</div>
+    </div>
+
+    <div class="chat-container" id="chat">
+        <div class="message ai">
+            Hello! I am MultiTwist AI. Ask me anything.
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Ask MultiTwist anything..."
+        >
+        <button class="send" onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+<script>
+
+async function sendMessage(){
+
+    let input = document.getElementById("userInput");
+    let text = input.value.trim();
+
+    if(text === "") return;
+
+    let chat = document.getElementById("chat");
+
+    let userMsg = document.createElement("div");
+    userMsg.className = "message user";
+    userMsg.innerText = text;
+    chat.appendChild(userMsg);
+
+    input.value = "";
+
+    let aiMsg = document.createElement("div");
+    aiMsg.className = "message ai";
+    aiMsg.innerText = "Thinking...";
+    chat.appendChild(aiMsg);
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: text
+        })
+    });
+
+    const data = await response.json();
+
+    aiMsg.innerText = data.reply;
+
+    chat.scrollTop = chat.scrollHeight;
+}
+
+</script>
+</body>
+</html>
