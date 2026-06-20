@@ -1,6 +1,6 @@
 from flask import Flask, send_file, request, jsonify
 
-app = Flask(**name**)
+app = Flask(__name__)
 
 @app.route("/")
 def home():
