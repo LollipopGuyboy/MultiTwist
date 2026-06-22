@@ -1,19 +1,10 @@
-from flask import Flask, send_file, request, jsonify
+from flask import Flask
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
-return send_file("multitwist.html")
+    return "MultiTwist is alive!"
 
-@app.route("/chat", methods=["POST"])
-def chat():
-data = request.json
-message = data["message"]
-
-reply = f"You said: {message}"
-
-return jsonify({"reply": reply})
-
-if name == "main":
-app.run()
+if __name__ == "__main__":
+    app.run()
