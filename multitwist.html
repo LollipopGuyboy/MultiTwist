@@ -160,7 +160,8 @@ button.send{
 
 </div>
 <script>
-
+let chats = [];
+let currentChat = [];
 async function sendMessage(){
 
     let input = document.getElementById("userInput");
@@ -174,6 +175,10 @@ async function sendMessage(){
     userMsg.className = "message user";
     userMsg.innerText = text;
     chat.appendChild(userMsg);
+  currentChat.push({
+    sender: "user",
+    text: text
+});
 chat.scrollTop = chat.scrollHeight;
     input.value = "";
 
@@ -195,7 +200,14 @@ chat.scrollTop = chat.scrollHeight;
     const data = await response.json();
 
     aiMsg.innerText = data.reply;
-
+currentChat.push({
+    sender: "ai",
+    text: data.reply
+});
+  localStorage.setItem(
+    "multitwistCurrentChat",
+    JSON.stringify(currentChat)
+);
     chat.scrollTop = chat.scrollHeight;
 }
 // Press Enter to Send
@@ -218,6 +230,33 @@ document.getElementById("userInput").addEventListener("keydown", function(event)
     `;
 
 }
+  window.onload = function () {
+
+    const saved = localStorage.getItem("multitwistCurrentChat");
+
+    if (!saved) return;
+
+    currentChat = JSON.parse(saved);
+
+    const chat = document.getElementById("chat");
+
+    chat.innerHTML = "";
+
+    currentChat.forEach(msg => {
+
+        const div = document.createElement("div");
+
+        div.className =
+            "message " +
+            (msg.sender === "user" ? "user" : "ai");
+
+        div.innerText = msg.text;
+
+        chat.appendChild(div);
+
+    });
+
+}  
 </script>
 </body>
 </html>
