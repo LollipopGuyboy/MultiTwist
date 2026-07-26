@@ -174,7 +174,7 @@ async function sendMessage(){
     userMsg.className = "message user";
     userMsg.innerText = text;
     chat.appendChild(userMsg);
-
+chat.scrollTop = chat.scrollHeight;
     input.value = "";
 
     let aiMsg = document.createElement("div");
