@@ -200,7 +200,15 @@ async function sendMessage(){
 
     chat.scrollTop = chat.scrollHeight;
 }
+// Press Enter to Send
+document.getElementById("userInput").addEventListener("keydown", function(event) {
 
+    if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+    }
+
+});
 </script>
 </body>
 </html>
