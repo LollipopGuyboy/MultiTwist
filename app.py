@@ -31,7 +31,7 @@ def search_web(query):
 def home():
     return send_file("multitwist.html")
 
-@@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["POST"])
 def chat():
 
     data = request.json
