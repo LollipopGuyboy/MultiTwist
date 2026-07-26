@@ -352,11 +352,42 @@ function renderChat(){
         div.className=
         "message "+msg.sender;
 
-        div.innerText=
-        msg.text;
 
         chat.appendChild(div);
+const text = document.createElement("span");
+text.innerText = msg.text;
 
+div.appendChild(text);
+
+if(msg.sender === "ai"){
+
+    const copy = document.createElement("button");
+
+    copy.innerHTML = "📋";
+
+    copy.style.marginLeft = "10px";
+    copy.style.background = "transparent";
+    copy.style.border = "none";
+    copy.style.cursor = "pointer";
+    copy.style.fontSize = "16px";
+
+    copy.onclick = function(){
+
+        navigator.clipboard.writeText(msg.text);
+
+        copy.innerHTML = "✅";
+
+        setTimeout(function(){
+
+            copy.innerHTML = "📋";
+
+        },1000);
+
+    };
+
+    div.appendChild(copy);
+
+}
     });
 
     chat.scrollTop=
