@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MultiTwist AI</title>
-  
-<style>
-*{
 
+<style>
+
+*{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
 }
 
 body{
@@ -21,12 +21,13 @@ body{
     color:white;
 }
 
-/* Sidebar */
 .sidebar{
     width:280px;
     background:#111827;
-    padding:15px;
     border-right:1px solid #333;
+    display:flex;
+    flex-direction:column;
+    padding:15px;
 }
 
 .new-chat{
@@ -37,35 +38,43 @@ body{
     background:#2563eb;
     color:white;
     cursor:pointer;
+    font-size:16px;
     margin-bottom:20px;
 }
 
+.new-chat:hover{
+    background:#1d4ed8;
+}
+
 .history{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
+    flex:1;
+    overflow-y:auto;
 }
 
 .history-item{
     padding:12px;
     background:#1f2937;
     border-radius:10px;
+    margin-bottom:10px;
     cursor:pointer;
+    transition:.2s;
 }
 
-/* Main */
+.history-item:hover{
+    background:#374151;
+}
+
 .main{
     flex:1;
     display:flex;
     flex-direction:column;
 }
 
-/* Header */
 .header{
     height:70px;
     display:flex;
-    justify-content:flex-end;
     align-items:center;
+    justify-content:flex-end;
     padding:0 25px;
     border-bottom:1px solid #333;
 }
@@ -76,7 +85,6 @@ body{
     color:#60a5fa;
 }
 
-/* Chat */
 .chat-container{
     flex:1;
     overflow-y:auto;
@@ -86,8 +94,9 @@ body{
 .message{
     max-width:75%;
     padding:12px 15px;
-    margin:10px 0;
     border-radius:12px;
+    margin:10px 0;
+    word-wrap:break-word;
 }
 
 .user{
@@ -98,9 +107,7 @@ body{
 .ai{
     background:#1e293b;
 }
-
-/* Input */
-.input-area{
+  .input-area{
     display:flex;
     padding:15px;
     border-top:1px solid #333;
@@ -114,6 +121,7 @@ input{
     border-radius:10px;
     background:#1f2937;
     color:white;
+    font-size:16px;
 }
 
 button.send{
@@ -124,139 +132,302 @@ button.send{
     background:#2563eb;
     color:white;
     cursor:pointer;
+    font-size:16px;
 }
+
+button.send:hover{
+    background:#1d4ed8;
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="sidebar">
- <button class="new-chat" onclick="newChat()">+ New Chat</button>
 
-    <div class="history">
-        
+    <button class="new-chat" onclick="newChat()">
+        + New Chat
+    </button>
+
+    <div class="history" id="history">
+
     </div>
+
 </div>
 
 <div class="main">
 
     <div class="header">
-        <div class="logo">MultiTwist</div>
+
+        <div class="logo">
+            MultiTwist
+        </div>
+
     </div>
 
     <div class="chat-container" id="chat">
-        <div class="message ai">
-            Hello! I am MultiTwist AI. Ask me anything.
-        </div>
+
     </div>
 
     <div class="input-area">
+
         <input
-            type="text"
             id="userInput"
+            type="text"
             placeholder="Ask MultiTwist anything..."
         >
-        <button class="send" onclick="sendMessage()">Send</button>
+
+        <button
+            class="send"
+            onclick="sendMessage()"
+        >
+            Send
+        </button>
+
     </div>
 
 </div>
+
 <script>
-let chats = [];
-let currentChat = [];
-async function sendMessage(){
 
-    let input = document.getElementById("userInput");
-    let text = input.value.trim();
+let chats =
+JSON.parse(localStorage.getItem("multitwistChats"))
+|| [];
 
-    if(text === "") return;
+let currentChat = null;
 
-    let chat = document.getElementById("chat");
+function saveChats(){
 
-    let userMsg = document.createElement("div");
-    userMsg.className = "message user";
-    userMsg.innerText = text;
-    chat.appendChild(userMsg);
-  currentChat.push({
-    sender: "user",
-    text: text
-});
-chat.scrollTop = chat.scrollHeight;
-    input.value = "";
+    localStorage.setItem(
+        "multitwistChats",
+        JSON.stringify(chats)
+    );
 
-    let aiMsg = document.createElement("div");
-    aiMsg.className = "message ai";
-    aiMsg.innerText = "Thinking...";
-    chat.appendChild(aiMsg);
+}
+  function loadHistory(){
 
-    const response = await fetch("/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            message: text
-        })
+    const history =
+    document.getElementById("history");
+
+    history.innerHTML = "";
+
+    chats.forEach((chat,index)=>{
+
+        const item =
+        document.createElement("div");
+
+        item.className = "history-item";
+
+        if(chat.messages.length > 0){
+
+            item.innerText =
+            chat.title;
+
+        }else{
+
+            item.innerText =
+            "New Chat";
+
+        }
+
+        item.onclick = ()=>{
+
+            openChat(index);
+
+        };
+
+        history.appendChild(item);
+
     });
 
-    const data = await response.json();
-
-    aiMsg.innerText = data.reply;
-currentChat.push({
-    sender: "ai",
-    text: data.reply
-});
-  localStorage.setItem(
-    "multitwistCurrentChat",
-    JSON.stringify(currentChat)
-);
-    chat.scrollTop = chat.scrollHeight;
 }
-// Press Enter to Send
-document.getElementById("userInput").addEventListener("keydown", function(event) {
 
-    if (event.key === "Enter") {
-        event.preventDefault();
-        sendMessage();
+function newChat(){
+
+    const chatObject={
+
+        title:"New Chat",
+
+        messages:[]
+
+    };
+
+    chats.push(chatObject);
+
+    currentChat=chatObject;
+
+    saveChats();
+
+    loadHistory();
+
+    renderChat();
+
+}
+
+function openChat(index){
+
+    currentChat=chats[index];
+
+    renderChat();
+
+}
+
+function renderChat(){
+
+    const chat=
+    document.getElementById("chat");
+
+    chat.innerHTML="";
+
+    if(currentChat.messages.length===0){
+
+        const hello=
+        document.createElement("div");
+
+        hello.className="message ai";
+
+        hello.innerText=
+        "Hello! I am MultiTwist AI. Ask me anything.";
+
+        chat.appendChild(hello);
+
+        return;
+
     }
 
-});
-  function newChat() {
+    currentChat.messages.forEach(msg=>{
 
-    const chat = document.getElementById("chat");
+        const div=
+        document.createElement("div");
 
-    chat.innerHTML = `
-        <div class="message ai">
-            Hello! I am MultiTwist AI. Ask me anything.
-        </div>
-    `;
+        div.className=
+        "message "+msg.sender;
 
-}
-  window.onload = function () {
-
-    const saved = localStorage.getItem("multitwistCurrentChat");
-
-    if (!saved) return;
-
-    currentChat = JSON.parse(saved);
-
-    const chat = document.getElementById("chat");
-
-    chat.innerHTML = "";
-
-    currentChat.forEach(msg => {
-
-        const div = document.createElement("div");
-
-        div.className =
-            "message " +
-            (msg.sender === "user" ? "user" : "ai");
-
-        div.innerText = msg.text;
+        div.innerText=
+        msg.text;
 
         chat.appendChild(div);
 
     });
 
-}  
+    chat.scrollTop=
+    chat.scrollHeight;
+
+}
+  async function sendMessage(){
+
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+
+    if(text==="") return;
+
+    if(currentChat===null){
+
+        newChat();
+
+    }
+
+    currentChat.messages.push({
+
+        sender:"user",
+        text:text
+
+    });
+
+    if(currentChat.title==="New Chat"){
+
+        currentChat.title=text.substring(0,30);
+
+    }
+
+    renderChat();
+    loadHistory();
+    saveChats();
+
+    input.value="";
+
+    const chat=document.getElementById("chat");
+
+    const thinking=document.createElement("div");
+
+    thinking.className="message ai";
+    thinking.innerText="Thinking...";
+
+    chat.appendChild(thinking);
+
+    chat.scrollTop=chat.scrollHeight;
+
+    try{
+
+        const response=await fetch("/chat",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+                message:text
+            })
+
+        });
+
+        const data=await response.json();
+
+        thinking.remove();
+
+        currentChat.messages.push({
+
+            sender:"ai",
+            text:data.reply
+
+        });
+
+        renderChat();
+
+        saveChats();
+
+    }catch(err){
+
+        thinking.innerText="Error contacting AI.";
+
+    }
+
+}
+
+document.getElementById("userInput").addEventListener("keydown",function(e){
+
+    if(e.key==="Enter"){
+
+        e.preventDefault();
+
+        sendMessage();
+
+    }
+
+});
+
+window.onload=function(){
+
+    loadHistory();
+
+    if(chats.length>0){
+
+        currentChat=chats[0];
+
+    }else{
+
+        newChat();
+
+    }
+
+    renderChat();
+
+};
+
 </script>
+
 </body>
 </html>
