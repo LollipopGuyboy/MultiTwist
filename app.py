@@ -31,33 +31,9 @@ def search_web(query):
 def home():
     return send_file("multitwist.html")
 
-@app.route("/chat", methods=["POST"])
+@@app.route("/chat", methods=["POST"])
 def chat():
-    data = request.json
 
-    history = data.get("messages", [])
-
-    messages = [
-        {
-            "role": "system",
-            "content": "You are MultiTwist AI. You were created by Rishabh."
-        }
-    ]
-
-    for msg in history:
-        messages.append({
-            "role": "user" if msg["sender"] == "user" else "assistant",
-            "content": msg["text"]
-        })
-
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=messages
-    )
-
-    reply = response.choices[0].message.content
-
-    return jsonify({"reply": reply})
     data = request.json
     message = data.get("message", "")
 
