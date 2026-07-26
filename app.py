@@ -12,7 +12,21 @@ print("GROQ KEY STARTS WITH:", groq_key[:4] if groq_key else "NONE")
 
 client = Groq(api_key=groq_key)
 
+def search_web(query):
+    url = "https://google.serper.dev/search"
 
+    headers = {
+        "X-API-KEY": os.environ.get("SERPER_API_KEY"),
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json={"q": query}
+    )
+
+    return response.json()
 @app.route("/")
 def home():
     return send_file("multitwist.html")
