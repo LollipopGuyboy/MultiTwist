@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, send_file, request, jsonify
 from groq import Groq
 import os
