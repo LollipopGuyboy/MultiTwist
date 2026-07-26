@@ -4,8 +4,12 @@ import os
 
 app = Flask(__name__)
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY")
+groq_key = os.environ.get("GROQ_API_KEY")
+
+print("GROQ KEY EXISTS:", groq_key is not None)
+print("GROQ KEY STARTS WITH:", groq_key[:4] if groq_key else "NONE")
+
+client = Groq(api_key=groq_key)
 )
 
 @app.route("/")
