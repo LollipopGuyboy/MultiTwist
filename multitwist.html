@@ -209,6 +209,17 @@ document.getElementById("userInput").addEventListener("keydown", function(event)
     }
 
 });
+  function newChat() {
+
+    const chat = document.getElementById("chat");
+
+    chat.innerHTML = `
+        <div class="message ai">
+            Hello! I am MultiTwist AI. Ask me anything.
+        </div>
+    `;
+
+}
 </script>
 </body>
 </html>
