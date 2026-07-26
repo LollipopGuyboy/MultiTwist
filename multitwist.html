@@ -205,33 +205,81 @@ function saveChats(){
     );
 
 }
-  function loadHistory(){
+ 
+function loadHistory(){
 
-    const history =
-    document.getElementById("history");
-
+    const history = document.getElementById("history");
     history.innerHTML = "";
 
     chats.forEach((chat,index)=>{
 
-        const item =
-        document.createElement("div");
-
+        const item = document.createElement("div");
         item.className = "history-item";
 
-        if(chat.messages.length > 0){
+        const title = document.createElement("span");
+        title.innerText = chat.title;
 
-            item.innerText =
-            chat.title;
+        // Double-click to rename
+        title.ondblclick = function(){
 
-        }else{
+            const newName = prompt("Rename chat:", chat.title);
 
-            item.innerText =
-            "New Chat";
+            if(newName && newName.trim() !== ""){
 
-        }
+                chat.title = newName;
 
-        item.onclick = ()=>{
+                saveChats();
+
+                loadHistory();
+
+            }
+
+        };
+
+        // Delete button
+        const del = document.createElement("button");
+        del.innerHTML = "🗑️";
+
+        del.style.float = "right";
+        del.style.background = "transparent";
+        del.style.border = "none";
+        del.style.cursor = "pointer";
+        del.style.color = "white";
+
+        del.onclick = function(e){
+
+            e.stopPropagation();
+
+            if(confirm("Delete this chat?")){
+
+                chats.splice(index,1);
+
+                if(chats.length===0){
+
+                    currentChat=null;
+
+                    newChat();
+
+                }else{
+
+                    currentChat=chats[0];
+
+                }
+
+                saveChats();
+
+                loadHistory();
+
+                renderChat();
+
+            }
+
+        };
+
+        item.appendChild(title);
+        item.appendChild(del);
+
+        item.onclick = function(){
 
             openChat(index);
 
