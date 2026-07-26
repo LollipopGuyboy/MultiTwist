@@ -35,7 +35,16 @@ def home():
 def chat():
     data = request.json
     message = data.get("message", "")
+search_results = search_web(message)
 
+web_info = ""
+
+if "organic" in search_results:
+    for result in search_results["organic"][:5]:
+        web_info += (
+            f"Title: {result['title']}\n"
+            f"Snippet: {result['snippet']}\n\n"
+        )
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
