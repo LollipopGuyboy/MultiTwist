@@ -58,7 +58,6 @@ def chat():
     reply = response.choices[0].message.content
 
     return jsonify({"reply": reply})
-
     data = request.json
     message = data.get("message", "")
 
