@@ -5,6 +5,8 @@ import os
 
 app = Flask(__name__)
 
+conversation_memory = {}
+
 # ----------------------------
 # API KEYS
 # ----------------------------
@@ -51,10 +53,13 @@ def chat():
 
     data = request.json
     message = data.get("message", "")
+    chat_id = data.get("chat_id", "default")
+
+    if chat_id not in conversation_memory:
+        conversation_memory[chat_id] = []
 
     lower = message.lower()
 
-    # Decide whether web search is needed
     search_words = [
         "latest",
         "today",
@@ -79,22 +84,24 @@ def chat():
         {
             "role": "system",
             "content": """
-You are MultiTwist AI created by Rishabh.
+You are MultiTwist AI, created by Rishabh.
 
 Behave like ChatGPT.
 
-- Be friendly.
-- Talk naturally.
-- If someone says hello, hi or hey, greet them.
-- Never explain what a greeting means.
-- Answer naturally.
-- Keep responses clear and helpful.
-- If web search information is provided, use it naturally.
+- Be friendly and conversational.
+- If someone says "hi", "hello", "hey", greet them normally.
+- Don't explain simple greetings unless asked.
+- Remember the conversation naturally.
+- Answer clearly and helpfully.
+- Use web information only when it is provided.
 """
         }
     ]
 
-    # Use web search only when needed
+    # Add previous conversation
+    messages.extend(conversation_memory[chat_id])
+
+    # Web search if needed
     if need_search:
 
         results = search_web(message)
@@ -113,17 +120,33 @@ Behave like ChatGPT.
             "content": f"Recent web information:\n\n{web_info}"
         })
 
+    # Current user message
     messages.append({
         "role": "user",
         "content": message
     })
 
+    # Ask Groq
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=messages
     )
 
     reply = response.choices[0].message.content
+
+    # Save conversation memory
+    conversation_memory[chat_id].append({
+        "role": "user",
+        "content": message
+    })
+
+    conversation_memory[chat_id].append({
+        "role": "assistant",
+        "content": reply
+    })
+
+    # Keep only last 20 messages
+    conversation_memory[chat_id] = conversation_memory[chat_id][-20:]
 
     return jsonify({
         "reply": reply
