@@ -85,7 +85,7 @@ search_words = [
     "live",
     "breaking",
     "update",
-    "who won"
+    "who won",
 ]
 
     need_search = any(word in lower for word in search_words)
