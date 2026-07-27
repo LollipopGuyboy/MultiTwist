@@ -5,6 +5,10 @@ import os
 
 app = Flask(__name__)
 
+# ----------------------------
+# MEMORY
+# ----------------------------
+
 conversation_memory = {}
 
 # ----------------------------
@@ -52,6 +56,7 @@ def home():
 def chat():
 
     data = request.json
+
     message = data.get("message", "")
     chat_id = data.get("chat_id", "default")
 
@@ -73,9 +78,9 @@ def chat():
         "price",
         "stock",
         "live",
-        "who won",
         "breaking",
-        "update"
+        "update",
+        "who won"
     ]
 
     need_search = any(word in lower for word in search_words)
@@ -84,21 +89,22 @@ def chat():
         {
             "role": "system",
             "content": """
-You are MultiTwist AI, created by Rishabh.
+You are MultiTwist AI created by Rishabh.
 
 Behave like ChatGPT.
 
-- Be friendly and conversational.
-- If someone says "hi", "hello", "hey", greet them normally.
-- Don't explain simple greetings unless asked.
-- Remember the conversation naturally.
-- Answer clearly and helpfully.
-- Use web information only when it is provided.
+Rules:
+- Be friendly.
+- Talk naturally.
+- If the user says hello, hi, hey, greet them normally.
+- Don't explain greetings.
+- Remember previous messages in the conversation.
+- Only use web information if it is provided.
 """
         }
     ]
 
-    # Add previous conversation
+    # Previous conversation
     messages.extend(conversation_memory[chat_id])
 
     # Web search if needed
@@ -117,10 +123,10 @@ Behave like ChatGPT.
 
         messages.append({
             "role": "system",
-            "content": f"Recent web information:\n\n{web_info}"
+            "content": "Recent web information:\n\n" + web_info
         })
 
-    # Current user message
+    # Current message
     messages.append({
         "role": "user",
         "content": message
@@ -134,7 +140,7 @@ Behave like ChatGPT.
 
     reply = response.choices[0].message.content
 
-    # Save conversation memory
+    # Save memory
     conversation_memory[chat_id].append({
         "role": "user",
         "content": message
