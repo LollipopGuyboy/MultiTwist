@@ -138,13 +138,77 @@ button.send{
 button.send:hover{
     background:#1d4ed8;
 }
+/* ==========================
+   MOBILE RESPONSIVE
+========================== */
 
+@media (max-width: 768px){
+
+body{
+    flex-direction:column;
+}
+
+.sidebar{
+    position:fixed;
+    left:-280px;
+    top:0;
+    width:260px;
+    height:100%;
+    z-index:999;
+    transition:.3s;
+}
+
+.sidebar.show{
+    left:0;
+}
+
+.main{
+    width:100%;
+}
+
+.header{
+    justify-content:space-between;
+    padding:12px;
+}
+
+.logo{
+    font-size:20px;
+}
+
+.chat-container{
+    padding:12px;
+}
+
+.message{
+    max-width:95%;
+    font-size:15px;
+}
+
+.input-area{
+    padding:10px;
+}
+
+input{
+    font-size:16px;
+    padding:12px;
+}
+
+button.send{
+    padding:12px 16px;
+    font-size:15px;
+}
+
+.history-item{
+    font-size:14px;
+}
+
+}
 </style>
 </head>
 
 <body>
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
 
     <button class="new-chat" onclick="newChat()">
         + New Chat
@@ -158,13 +222,17 @@ button.send:hover{
 
 <div class="main">
 
-    <div class="header">
+ <div class="header">
 
-        <div class="logo">
-            MultiTwist
-        </div>
-
+    <div onclick="toggleSidebar()" style="font-size:28px;cursor:pointer;">
+        ☰
     </div>
+
+    <div class="logo">
+        MultiTwist
+    </div>
+
+</div>
 
     <div class="chat-container" id="chat">
 
@@ -506,7 +574,9 @@ window.onload=function(){
     renderChat();
 
 };
-
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("show");
+}
 </script>
 
 </body>
