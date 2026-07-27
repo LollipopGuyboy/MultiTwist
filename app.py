@@ -1,11 +1,17 @@
-
 from flask import Flask, send_file, request, jsonify
-from groq import Groq
+from werkzeug.utils import secure_filenamefrom groq import Groq
 import requests
 import os
+import base64
 
 app = Flask(__name__)
 
+UPLOAD_FOLDER = "uploads"
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # ----------------------------
 # MEMORY
 # ----------------------------
@@ -18,8 +24,10 @@ conversation_memory = {}
 
 groq_key = os.environ.get("GROQ_API_KEY")
 serper_key = os.environ.get("SERPER_API_KEY")
+openrouter_key = os.environ.get("OPENROUTER_API_KEY")
 
 client = Groq(api_key=groq_key)
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # ----------------------------
 # WEB SEARCH
@@ -55,7 +63,71 @@ def home():
 @app.route("/chat", methods=["POST"])
 def chat():
 
-    data = request.json
+message = request.form.get("message", "")
+image = request.files.get("image")
+if image:
+
+    filename = secure_filename(image.filename)
+
+    image_bytes = image.read()
+
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+    headers = {
+        "Authorization": f"Bearer {openrouter_key}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "openrouter/free",
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": message if message else "Describe this image."
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{image.mimetype};base64,{image_base64}"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+    response = requests.post(
+        OPENROUTER_URL,
+        headers=headers,
+        json=payload
+    )
+
+    result = response.json()
+
+    try:
+        reply = result["choices"][0]["message"]["content"]
+    except:
+        reply = str(result)
+
+    return jsonify({
+        "reply": reply
+    })
+# Save uploaded image
+if image:
+
+    filename = secure_filename(image.filename)
+
+    image_path = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        filename
+    )
+
+    image.save(image_path)
+
+    message += f"\n\n[User uploaded image: {filename}]"
 
     message = data.get("message", "")
     chat_id = data.get("chat_id", "default")
