@@ -63,30 +63,30 @@ def chat():
     if chat_id not in conversation_memory:
         conversation_memory[chat_id] = []
 
-    lower = message.lower()
-    
-  if "rishabh" in lower and "english teacher" in lower:
+   lower = message.lower()
+
+if "rishabh" in lower and "english teacher" in lower:
     return jsonify({
         "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
     })
-    
-    search_words = [
-        "latest
-        "today",
-        "current",
-        "news",
-        "recent",
-        "2025",
-        "2026",
-        "2027",
-        "weather",
-        "price",
-        "stock",
-        "live",
-        "breaking",
-        "update",
-        "who won"
-    ]
+
+search_words = [
+    "latest",
+    "today",
+    "current",
+    "news",
+    "recent",
+    "2025",
+    "2026",
+    "2027",
+    "weather",
+    "price",
+    "stock",
+    "live",
+    "breaking",
+    "update",
+    "who won"
+]
 
     need_search = any(word in lower for word in search_words)
 
