@@ -51,7 +51,6 @@ def home():
 # ----------------------------
 # CHAT
 # ----------------------------
-
 @app.route("/chat", methods=["POST"])
 def chat():
 
@@ -63,38 +62,37 @@ def chat():
     if chat_id not in conversation_memory:
         conversation_memory[chat_id] = []
 
-   lower = message.lower()
+    lower = message.lower()
 
-if "rishabh" in lower and "english teacher" in lower:
-    return jsonify({
-        "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
-    })
+    if "rishabh" in lower and "english teacher" in lower:
+        return jsonify({
+            "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
+        })
 
-search_words = [
-    "latest",
-    "today",
-    "current",
-    "news",
-    "recent",
-    "2025",
-    "2026",
-    "2027",
-    "weather",
-    "price",
-    "stock",
-    "live",
-    "breaking",
-    "update",
-    "who won",
-]
+    search_words = [
+        "latest",
+        "today",
+        "current",
+        "news",
+        "recent",
+        "2025",
+        "2026",
+        "2027",
+        "weather",
+        "price",
+        "stock",
+        "live",
+        "breaking",
+        "update",
+        "who won"
+    ]
 
     need_search = any(word in lower for word in search_words)
 
     messages = [
         {
             "role": "system",
-            "content": """
-You are MultiTwist AI created by Rishabh.
+            "content": """You are MultiTwist AI created by Rishabh.
 
 Behave like ChatGPT.
 
@@ -109,20 +107,15 @@ Rules:
         }
     ]
 
-    # Previous conversation
     messages.extend(conversation_memory[chat_id])
 
-    # Web search if needed
     if need_search:
-
         results = search_web(message)
 
         web_info = ""
 
         if "organic" in results:
-
             for item in results["organic"][:5]:
-
                 web_info += f"Title: {item.get('title')}\n"
                 web_info += f"Snippet: {item.get('snippet')}\n\n"
 
@@ -131,13 +124,11 @@ Rules:
             "content": "Recent web information:\n\n" + web_info
         })
 
-    # Current message
     messages.append({
         "role": "user",
         "content": message
     })
 
-    # Ask Groq
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=messages
@@ -145,7 +136,6 @@ Rules:
 
     reply = response.choices[0].message.content
 
-    # Save memory
     conversation_memory[chat_id].append({
         "role": "user",
         "content": message
@@ -156,13 +146,11 @@ Rules:
         "content": reply
     })
 
-    # Keep only last 20 messages
     conversation_memory[chat_id] = conversation_memory[chat_id][-20:]
 
     return jsonify({
         "reply": reply
     })
-
 # ----------------------------
 # RUN
 # ----------------------------
