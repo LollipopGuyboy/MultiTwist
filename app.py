@@ -1,3 +1,4 @@
+
 from flask import Flask, send_file, request, jsonify
 from groq import Groq
 import requests
@@ -99,6 +100,9 @@ Behave like ChatGPT.
 Rules:
 - Be friendly.
 - Talk naturally.
+- If the user's message contains spelling mistakes or typos, understand what they most likely meant.
+- Do NOT point out spelling mistakes unless the user asks.
+- Reply based on the intended meaning.
 - If the user says hello, hi, hey, greet them normally.
 - Don't explain greetings.
 - Remember previous messages in the conversation.
