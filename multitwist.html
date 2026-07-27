@@ -239,19 +239,24 @@ button.send{
     </div>
 
     <div class="input-area">
+<input
+    id="userInput"
+    type="text"
+    placeholder="Ask MultiTwist anything..."
+>
 
-        <input
-            id="userInput"
-            type="text"
-            placeholder="Ask MultiTwist anything..."
-        >
+<input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+>
 
-        <button
-            class="send"
-            onclick="sendMessage()"
-        >
-            Send
-        </button>
+<button
+    class="send"
+    onclick="sendMessage()"
+>
+    Send
+</button>
 
     </div>
 
@@ -462,13 +467,14 @@ if(msg.sender === "ai"){
     chat.scrollHeight;
 
 }
-  async function sendMessage(){
+    async function sendMessage(){
 
     const input = document.getElementById("userInput");
+    const image = document.getElementById("imageInput").files[0];
+
     const text = input.value.trim();
 
-    if(text==="") return;
-
+    if(text === "" && !image) return;
     if(currentChat===null){
 
         newChat();
@@ -493,7 +499,7 @@ if(msg.sender === "ai"){
     saveChats();
 
     input.value="";
-
+document.getElementById("imageInput").value="";
     const chat=document.getElementById("chat");
 
     const thinking=document.createElement("div");
@@ -507,22 +513,20 @@ if(msg.sender === "ai"){
 
     try{
 
-        const response=await fetch("/chat",{
+      const formData = new FormData();
 
-            method:"POST",
+formData.append("message", text);
 
-            headers:{
-                "Content-Type":"application/json"
-            },
+if(image){
+    formData.append("image", image);
+}
 
-          body: JSON.stringify({
-    message: text,
-    chat_id: chats.indexOf(currentChat).toString()
-})
+const response = await fetch("/chat",{
+    method:"POST",
+    body:formData
+});
 
-        });
-
-        const data=await response.json();
+const data = await response.json();
 
         thinking.remove();
 
