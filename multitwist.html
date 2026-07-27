@@ -447,9 +447,10 @@ if(msg.sender === "ai"){
                 "Content-Type":"application/json"
             },
 
-            body:JSON.stringify({
-                message:text
-            })
+          body: JSON.stringify({
+    message: text,
+    chat_id: chats.indexOf(currentChat).toString()
+})
 
         });
 
