@@ -64,6 +64,10 @@ def chat():
         conversation_memory[chat_id] = []
 
     lower = message.lower()
+    if lower == "who is rishabh's english teacher":
+    return jsonify({
+        "reply": "Rishabh's English teacher is **Shiva Mam** 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
+    })
 
     search_words = [
         "latest",
