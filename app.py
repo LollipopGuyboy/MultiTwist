@@ -96,6 +96,7 @@ def chat():
     # Execute web search if flagged or prompt is long
     if need_search or len(message.split()) > 8:
         results = search_web(message)
+        print(results)
         web_info = ""
         if results and "organic" in results:
             for item in results["organic"][:5]:
