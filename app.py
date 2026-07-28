@@ -61,61 +61,7 @@ def home():
 # ----------------------------
 # CHAT
 # ----------------------------
-@app.route("/chat", methods=["POST"])
-def chat():
 
-message = request.form.get("message", "")
-image = request.files.get("image")
-if image:
-
-    filename = secure_filename(image.filename)
-
-    image_bytes = image.read()
-
-    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-
-    headers = {
-        "Authorization": f"Bearer {openrouter_key}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "openrouter/free",
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": message if message else "Describe this image."
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:{image.mimetype};base64,{image_base64}"
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-
-    response = requests.post(
-        OPENROUTER_URL,
-        headers=headers,
-        json=payload
-    )
-
-    result = response.json()
-
-    try:
-        reply = result["choices"][0]["message"]["content"]
-    except:
-        reply = str(result)
-
-    return jsonify({
-        "reply": reply
-    })
 # Save uploaded image
 if image:
 
