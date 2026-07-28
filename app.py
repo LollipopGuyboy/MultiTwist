@@ -1,18 +1,11 @@
+
 from flask import Flask, send_file, request, jsonify
-from werkzeug.utils import secure_filename
 from groq import Groq
 import requests
 import os
-import base64
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
-
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # ----------------------------
 # MEMORY
 # ----------------------------
@@ -25,10 +18,8 @@ conversation_memory = {}
 
 groq_key = os.environ.get("GROQ_API_KEY")
 serper_key = os.environ.get("SERPER_API_KEY")
-openrouter_key = os.environ.get("OPENROUTER_API_KEY")
 
 client = Groq(api_key=groq_key)
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # ----------------------------
 # WEB SEARCH
@@ -61,20 +52,10 @@ def home():
 # ----------------------------
 # CHAT
 # ----------------------------
+@app.route("/chat", methods=["POST"])
+def chat():
 
-# Save uploaded image
-if image:
-
-    filename = secure_filename(image.filename)
-
-    image_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        filename
-    )
-
-    image.save(image_path)
-
-    message += f"\n\n[User uploaded image: {filename}]"
+    data = request.json
 
     message = data.get("message", "")
     chat_id = data.get("chat_id", "default")
