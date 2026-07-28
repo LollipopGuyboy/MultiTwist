@@ -71,24 +71,41 @@ def chat():
         return jsonify({
             "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
         })
+search_topics = [
+    "who",
+    "president",
+    "prime minister",
+    "ceo",
+    "weather",
+    "news",
+    "price",
+    "stock",
+    "bitcoin",
+    "crypto",
+    "ipl",
+    "cricket",
+    "football",
+    "nba",
+    "election",
+    "government",
+    "minister",
+    "company",
+    "release",
+    "latest",
+    "today",
+    "current",
+    "now",
+    "rn",
+    "recent",
+    "update",
+    "live",
+    "breaking",
+    "2025",
+    "2026",
+    "2027"
+]
 
-    search_words = [
-        "latest",
-        "today",
-        "current",
-        "news",
-        "recent",
-        "2025",
-        "2026",
-        "2027",
-        "weather",
-        "price",
-        "stock",
-        "live",
-        "breaking",
-        "update",
-        "who won"
-    ]
+need_search = any(topic in lower for topic in search_topics)
 
     need_search = any(word in lower for word in search_words)
 
@@ -119,7 +136,7 @@ Your personality:
 
     messages.extend(conversation_memory[chat_id])
 
-    if need_search:
+if need_search or len(message.split()) > 8:
         results = search_web(message)
 
         web_info = ""
