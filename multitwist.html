@@ -449,13 +449,53 @@ function renderChat(){
 const text = document.createElement("div");
 
 if (msg.sender === "ai") {
+
     text.innerHTML = marked.parse(msg.text);
+
+    text.querySelectorAll("pre").forEach(pre => {
+
+        const button = document.createElement("button");
+
+        button.innerHTML = "📋 Copy";
+
+        button.style.float = "right";
+        button.style.margin = "8px";
+        button.style.padding = "5px 10px";
+        button.style.border = "none";
+        button.style.borderRadius = "6px";
+        button.style.background = "#2563eb";
+        button.style.color = "white";
+        button.style.cursor = "pointer";
+
+        button.onclick = function(){
+
+            navigator.clipboard.writeText(
+                pre.querySelector("code").innerText
+            );
+
+            button.innerHTML = "✅ Copied";
+
+            setTimeout(function(){
+                button.innerHTML = "📋 Copy";
+            },1500);
+
+        };
+
+        pre.insertBefore(button, pre.firstChild);
+
+    });
+
+    text.querySelectorAll("pre code").forEach(block=>{
+        hljs.highlightElement(block);
+    });
+
 } else {
+
     text.innerText = msg.text;
+
 }
 
 div.appendChild(text);
-
 if(msg.sender === "ai"){
 
     const copy = document.createElement("button");
