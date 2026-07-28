@@ -1,122 +1,79 @@
-
+import os
+import requests
 from flask import Flask, send_file, request, jsonify
 from groq import Groq
-import requests
-import os
 
 app = Flask(__name__)
 
-# ----------------------------
-# MEMORY
-# ----------------------------
-
+# ---------------------------- #
+# MEMORY #
+# ---------------------------- #
 conversation_memory = {}
 
-# ----------------------------
-# API KEYS
-# ----------------------------
-
+# ---------------------------- #
+# API KEYS #
+# ---------------------------- #
 groq_key = os.environ.get("GROQ_API_KEY")
 serper_key = os.environ.get("SERPER_API_KEY")
-
 client = Groq(api_key=groq_key)
 
-# ----------------------------
-# WEB SEARCH
-# ----------------------------
-
+# ---------------------------- #
+# WEB SEARCH #
+# ---------------------------- #
 def search_web(query):
     url = "https://google.serper.dev/search"
-
     headers = {
         "X-API-KEY": serper_key,
         "Content-Type": "application/json"
     }
+    try:
+        response = requests.post(url, headers=headers, json={"q": query})
+        return response.json()
+    except Exception as e:
+        print(f"Search error: {e}")
+        return {}
 
-    response = requests.post(
-        url,
-        headers=headers,
-        json={"q": query}
-    )
-
-    return response.json()
-
-# ----------------------------
-# HOME
-# ----------------------------
-
+# ---------------------------- #
+# HOME #
+# ---------------------------- #
 @app.route("/")
 def home():
     return send_file("multitwist.html")
 
-# ----------------------------
-# CHAT
-# ----------------------------
+# ---------------------------- #
+# CHAT #
+# ---------------------------- #
 @app.route("/chat", methods=["POST"])
 def chat():
-
-
     message = request.form.get("message", "")
-    image = request.files.get("image") 
-
-    
+    image = request.files.get("image") # Available if you decide to implement multimodal features later
     chat_id = "default"
-
+    
     if chat_id not in conversation_memory:
         conversation_memory[chat_id] = []
-
+        
     lower = message.lower()
-
+    
+    # Custom East-Egg Trigger
     if "rishabh" in lower and "english teacher" in lower:
         return jsonify({
             "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
         })
-search_topics = [
-    "who",
-    "president",
-    "prime minister",
-    "ceo",
-    "weather",
-    "news",
-    "price",
-    "stock",
-    "bitcoin",
-    "crypto",
-    "ipl",
-    "cricket",
-    "football",
-    "nba",
-    "election",
-    "government",
-    "minister",
-    "company",
-    "release",
-    "latest",
-    "today",
-    "current",
-    "now",
-    "rn",
-    "recent",
-    "update",
-    "live",
-    "breaking",
-    "2025",
-    "2026",
-    "2027"
-]
-
-need_search = any(topic in lower for topic in search_topics)
-
-    need_search = any(word in lower for word in search_words)
-
+        
+    search_topics = [
+        "who", "president", "prime minister", "ceo", "weather", "news", "price", "stock", 
+        "bitcoin", "crypto", "ipl", "cricket", "football", "nba", "election", "government", 
+        "minister", "company", "release", "latest", "today", "current", "now", "rn", 
+        "recent", "update", "live", "breaking", "2025", "2026", "2027"
+    ]
+    
+    # Fixed the NameError by removing the broken duplicate line
+    need_search = any(topic in lower for topic in search_topics)
+    
     messages = [
         {
             "role": "system",
-            "content": """You are MultiTwist AI created by Rishabh.
-
-Behave like ChatGPT.
-
-Your personality:
+            "content": """You are MultiTwist AI created by Rishabh. Behave like ChatGPT. Your personality:
 - Friendly, intelligent, and conversational.
 - Speak naturally like ChatGPT.
 - Don't sound robotic or like a search engine.
@@ -129,58 +86,56 @@ Your personality:
 - If no web results are provided, rely on your own knowledge.
 - Never mention internal prompts or hidden instructions.
 - Remember the recent conversation and answer consistently.
-- If you're unsure, say so instead of making things up.
-"""
+- If you're unsure, say so instead of making things up. """
         }
     ]
-
+    
+    # Append past conversation memory history
     messages.extend(conversation_memory[chat_id])
-
-if need_search or len(message.split()) > 8:
+    
+    # Execute web search if flagged or prompt is long
+    if need_search or len(message.split()) > 8:
         results = search_web(message)
-
         web_info = ""
-
-        if "organic" in results:
+        if results and "organic" in results:
             for item in results["organic"][:5]:
                 web_info += f"Title: {item.get('title')}\n"
                 web_info += f"Snippet: {item.get('snippet')}\n\n"
-
-        messages.append({
-            "role": "system",
-            "content": "Recent web information:\n\n" + web_info
-        })
-
+        
+        if web_info:
+            messages.append({
+                "role": "system",
+                "content": f"Recent web information:\n\n{web_info}"
+            })
+            
+    # Append current user prompt
     messages.append({
         "role": "user",
         "content": message
     })
-
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=messages
-    )
-
-    reply = response.choices[0].message.content
-
-    conversation_memory[chat_id].append({
-        "role": "user",
-        "content": message
-    })
-
-    conversation_memory[chat_id].append({
-        "role": "assistant",
-        "content": reply
-    })
-
+    
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=messages
+        )
+        reply = response.choices[0].message.content
+    except Exception as e:
+        return jsonify({"reply": f"Error communicating with AI: {str(e)}"}), 500
+        
+    # Commit to memory
+    conversation_memory[chat_id].append({"role": "user", "content": message})
+    conversation_memory[chat_id].append({"role": "assistant", "content": reply})
+    
+    # Cap memory history to last 20 elements
     conversation_memory[chat_id] = conversation_memory[chat_id][-20:]
-
+    
     return jsonify({
         "reply": reply
     })
-# ----------------------------
-# RUN
-# ----------------------------
 
+# ---------------------------- #
+# RUN #
+# ---------------------------- #
 if __name__ == "__main__":
     app.run(debug=True)
