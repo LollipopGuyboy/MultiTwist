@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MultiTwist AI</title>
 
 
@@ -296,7 +296,29 @@ button.send{
 .history-item{
     font-size:14px;
 }
+#overlay{
+    display:none;
+}
 
+@media(max-width:768px){
+
+#overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    display:none;
+    z-index:998;
+}
+
+#overlay.show{
+    display:block;
+}
+
+.sidebar{
+    z-index:999;
+}
+
+}
 }
 </style>
 </head>
@@ -317,7 +339,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-
     </div>
 
 </div>
-
+<div id="overlay" onclick="closeSidebar()"></div>
 <div class="main">
 
  <div class="header">
@@ -470,7 +492,7 @@ function newChat(){
         title:"New Chat",
 
         messages:[]
-
+closeSidebar();
     };
 
     chats.push(chatObject);
@@ -491,6 +513,8 @@ function openChat(index){
 
     renderChat();
 
+
+    closeSidebar();
 }
 
 function renderChat(){
@@ -723,7 +747,18 @@ window.onload=function(){
 
 };
 function toggleSidebar(){
+
     document.getElementById("sidebar").classList.toggle("show");
+    document.getElementById("overlay").classList.toggle("show");
+
+}
+
+function closeSidebar(){
+
+    document.getElementById("sidebar").classList.remove("show");
+    document.getElementById("overlay").classList.remove("show");
+
+}
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
