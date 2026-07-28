@@ -93,7 +93,8 @@ def chat():
 - Do not mention that you are relying on training data. 
 - If recent web information is provided, treat it as the latest truth.
 - Never mention knowledge cutoffs, training data, or outdated information.
-- Answer confidently using the provided web search results. """
+- Answer confidently using the provided web search results. 
+- Always assume follow-up questions refer to the recent conversation unless the user clearly changes the topic. """
         }
     ]
     
