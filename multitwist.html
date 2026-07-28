@@ -29,7 +29,21 @@
     box-sizing:border-box;
     font-family:Arial,sans-serif;
 }
+.message{
+    position:relative;
+    line-height:1.7;
+    font-size:15px;
+}
 
+.ai{
+    background:#1e293b;
+    border:1px solid #334155;
+}
+
+.user{
+    background:#2563eb;
+    color:white;
+}
 body{
     display:flex;
     height:100vh;
@@ -68,18 +82,44 @@ body{
 }
 
 .history-item{
-    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 14px;
     background:#1f2937;
     border-radius:10px;
     margin-bottom:10px;
     cursor:pointer;
     transition:.2s;
+    gap:10px;
 }
 
 .history-item:hover{
     background:#374151;
 }
 
+.history-item span{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+    .delete-chat{
+    width:34px;
+    height:34px;
+    border:none;
+    border-radius:8px;
+    background:transparent;
+    color:#bbb;
+    cursor:pointer;
+    transition:.2s;
+    font-size:16px;
+}
+
+.delete-chat:hover{
+    background:#ef4444;
+    color:white;
+}
 .main{
     flex:1;
     display:flex;
@@ -208,7 +248,46 @@ input{
     font-size:16px;
     padding:12px;
 }
+   .input-area{
+    padding:16px;
+    gap:10px;
+    background:#111827;
+}
 
+input{
+    border-radius:16px;
+}
+    button,
+.history-item,
+.message{
+    transition:all .25s ease;
+}
+    ::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#475569;
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#64748b;
+}
+
+.send{
+    border-radius:16px;
+} 
+pre{
+    border-radius:12px;
+    overflow:auto;
+    padding:16px;
+    margin:15px 0;
+}
+
+code{
+    font-family:Consolas, monospace;
+}
 button.send{
     padding:12px 16px;
     font-size:15px;
@@ -330,7 +409,8 @@ function loadHistory(){
 
         // Delete button
         const del = document.createElement("button");
-        del.innerHTML = "🗑️";
+      del.innerHTML = "🗑️";
+del.className = "delete-chat";
 
         del.style.float = "right";
         del.style.background = "transparent";
@@ -499,8 +579,8 @@ div.appendChild(text);
 if(msg.sender === "ai"){
 
     const copy = document.createElement("button");
-
-    copy.innerHTML = "📋";
+copy.innerHTML = "Copy";
+copy.className = "copy-btn";
 
     copy.style.marginLeft = "10px";
     copy.style.background = "transparent";
