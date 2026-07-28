@@ -55,10 +55,11 @@ def home():
 @app.route("/chat", methods=["POST"])
 def chat():
 
-    data = request.json
+   message = request.form.get("message", "")
+   image = request.files.get("image") 
 
-    message = data.get("message", "")
-    chat_id = data.get("chat_id", "default")
+    
+    chat_id = "default"
 
     if chat_id not in conversation_memory:
         conversation_memory[chat_id] = []
