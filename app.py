@@ -52,7 +52,9 @@ def home():
 # ----------------------------
 # CHAT
 # ----------------------------
+@app.route("/chat", methods=["POST"])
 def chat():
+
 
     message = request.form.get("message", "")
     image = request.files.get("image") 
