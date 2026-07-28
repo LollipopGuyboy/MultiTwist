@@ -54,8 +54,8 @@ def home():
 # ----------------------------
 def chat():
 
-   message = request.form.get("message", "")
-   image = request.files.get("image") 
+    message = request.form.get("message", "")
+    image = request.files.get("image") 
 
     
     chat_id = "default"
