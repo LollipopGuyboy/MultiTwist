@@ -205,7 +205,10 @@ button.send{
 }
 </style>
 </head>
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
 <body>
 
 <div class="sidebar" id="sidebar">
@@ -427,8 +430,13 @@ function renderChat(){
 
 
         chat.appendChild(div);
-const text = document.createElement("span");
-text.innerText = msg.text;
+const text = document.createElement("div");
+
+if (msg.sender === "ai") {
+    text.innerHTML = marked.parse(msg.text);
+} else {
+    text.innerText = msg.text;
+}
 
 div.appendChild(text);
 
@@ -582,6 +590,6 @@ function toggleSidebar(){
     document.getElementById("sidebar").classList.toggle("show");
 }
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
