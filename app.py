@@ -1,6 +1,3 @@
-from PyPDF2 import PdfReader
-from docx import Document
-from PIL import Image
 import os
 import requests
 from flask import Flask, send_file, request, jsonify
@@ -50,36 +47,6 @@ def home():
 def chat():
     message = request.form.get("message", "")
     image = request.files.get("image") # Available if you decide to implement multimodal features later
-    if image:
-
-    filename = image.filename.lower()
-
-    if filename.endswith(".txt"):
-
-        message += "\n\nFile Content:\n" + image.read().decode("utf-8")
-
-    elif filename.endswith(".pdf"):
-
-        reader = PdfReader(image)
-
-        pdf_text = ""
-
-        for page in reader.pages:
-            pdf_text += page.extract_text() or ""
-
-        message += "\n\nPDF Content:\n" + pdf_text
-
-    elif filename.endswith(".docx"):
-
-        doc = Document(image)
-
-        doc_text = "\n".join(p.text for p in doc.paragraphs)
-
-        message += "\n\nDocument Content:\n" + doc_text
-
-    elif filename.endswith((".png",".jpg",".jpeg",".webp")):
-
-        message += "\n\nUser uploaded an image."
     chat_id = "default"
     
     if chat_id not in conversation_memory:
