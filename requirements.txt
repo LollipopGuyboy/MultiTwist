@@ -1,5 +1,7 @@
-flask
+Flask
 gunicorn
-groq
 requests
 openai
+PyPDF2
+python-docx
+Pillow
