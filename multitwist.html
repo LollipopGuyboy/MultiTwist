@@ -7,7 +7,6 @@
 
 
 <style>
-
 .message table{
     border-collapse: collapse;
     width: 100%;
@@ -59,12 +58,7 @@ body{
     display:flex;
     flex-direction:column;
     padding:15px;
-
-
-.sidebar{
-    z-index:999;
 }
-    
 
 .new-chat{
     width:100%;
@@ -323,11 +317,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-
     </div>
 
 </div>
+
 <div class="main">
 
  <div class="header">
 
-
+    <div onclick="toggleSidebar()" style="font-size:28px;cursor:pointer;">
+        ☰
+    </div>
 
     <div class="logo">
         MultiTwist
@@ -473,7 +470,7 @@ function newChat(){
         title:"New Chat",
 
         messages:[]
-closeSidebar();
+
     };
 
     chats.push(chatObject);
@@ -493,7 +490,7 @@ function openChat(index){
     currentChat=chats[index];
 
     renderChat();
-closeSidebar();
+
 }
 
 function renderChat(){
@@ -726,19 +723,8 @@ window.onload=function(){
 
 };
 function toggleSidebar(){
-
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-
-    sidebar.classList.toggle("show");
-    overlay.style.display =
-        sidebar.classList.contains("show")
-        ? "block"
-        : "none";
+    document.getElementById("sidebar").classList.toggle("show");
 }
-
-
-  
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
