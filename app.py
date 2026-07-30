@@ -19,14 +19,14 @@ conversation_memory = {}
 serper_key = os.environ.get("SERPER_API_KEY")
 client = OpenAI(
     api_key=os.environ["OPENROUTER_API_KEY"],
-    base_url="https://openrouter.ai"
+    base_url="https://openrouter.ai/api/v1"
 )
 
 # ---------------------------- #
 # WEB SEARCH                   #
 # ---------------------------- #
 def search_web(query):
-    url = "https://serper.dev"
+    url = "https://google.serper.dev/search"
     headers = {
         "X-API-KEY": serper_key,
         "Content-Type": "application/json"
@@ -161,12 +161,7 @@ def chat():
     
     # Execute Model Generation Call
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
-  ai_response = client.chat.completions.create(
-    model="openrouter/free",
-    messages=messages
-)
 
-reply = ai_response.choices[0].message.content
     
     # Commit simplified strings to short-term memory to keep content payloads clean
     conversation_memory[chat_id].append({"role": "user", "content": message if not image_data_url else f"[Uploaded Image] {message}"})
