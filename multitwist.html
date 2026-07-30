@@ -335,9 +335,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-
 
  <div class="header">
 
-    <div onclick="toggleSidebar()" style="font-size:28px;cursor:pointer;">
-        ☰
-    </div>
+<div id="menuBtn" onclick="toggleSidebar()" style="font-size:28px;cursor:pointer;">
+    ☰
+</div>
 
     <div class="logo">
         MultiTwist
@@ -484,6 +484,7 @@ function newChat(){
 
         messages:[]
 closeSidebar();
+    document.getElementById("sidebar").classList.remove("show");
     };
 
     chats.push(chatObject);
@@ -504,6 +505,7 @@ function openChat(index){
 
     renderChat();
 closeSidebar();
+    document.getElementById("sidebar").classList.remove("show");
 }
 
 function renderChat(){
@@ -753,6 +755,20 @@ function closeSidebar(){
     document.getElementById("overlay").style.display = "none";
 
 }
+    document.addEventListener("click", function(e){
+
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    if(
+        sidebar.classList.contains("show") &&
+        !sidebar.contains(e.target) &&
+        !menuBtn.contains(e.target)
+    ){
+        sidebar.classList.remove("show");
+    }
+
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
