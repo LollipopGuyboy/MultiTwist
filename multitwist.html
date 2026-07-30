@@ -287,6 +287,33 @@ button.send{
 }
 
 }
+    .upload-btn{
+    background:#1f2937;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+    margin:0 8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+}
+
+.upload-btn:hover{
+    background:#374151;
+}
+
+#fileName{
+    color:#aaa;
+    font-size:13px;
+    max-width:120px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+}
 </style>
 </head>
 <link rel="stylesheet"
@@ -330,12 +357,16 @@ href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-
     placeholder="Ask MultiTwist anything..."
 >
 
+<label for="imageInput" class="upload-btn">📎</label>
+
 <input
     type="file"
     id="imageInput"
-    accept="image/*"
+    accept=".pdf,.txt,.doc,.docx,image/*"
+    hidden
 >
 
+<span id="fileName"></span>
 <button
     class="send"
     onclick="sendMessage()"
@@ -709,6 +740,17 @@ window.onload=function(){
     renderChat();
 
 };
+   document.getElementById("imageInput").addEventListener("change", function(){
+
+    const file=this.files[0];
+
+    if(file){
+        document.getElementById("fileName").innerText=file.name;
+    }else{
+        document.getElementById("fileName").innerText="";
+    }
+
+}); 
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
