@@ -161,12 +161,12 @@ def chat():
     
     # Execute Model Generation Call
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages=messages
-    )
-    
-    reply = response.choices[0].message.content
+  ai_response = client.chat.completions.create(
+    model="openrouter/free",
+    messages=messages
+)
+
+reply = ai_response.choices[0].message.content
     
     # Commit simplified strings to short-term memory to keep content payloads clean
     conversation_memory[chat_id].append({"role": "user", "content": message if not image_data_url else f"[Uploaded Image] {message}"})
