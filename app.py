@@ -57,38 +57,38 @@ def chat():
     chat_id = request.form.get("session_id", "default")
     
     image_data_url = None
-    
-  if image:
-    filename = image.filename.lower()
 
-    if filename.endswith(".txt"):
-        message += "\n\nFile Content:\n" + image.read().decode("utf-8")
+    if image:
+        filename = image.filename.lower()
 
-    elif filename.endswith(".pdf"):
-        reader = PdfReader(image)
-        pdf_text = ""
-        for page in reader.pages:
-            pdf_text += page.extract_text() or ""
+        if filename.endswith(".txt"):
+            message += "\n\nFile Content:\n" + image.read().decode("utf-8")
 
-        # Limit PDF size
-        message += "\n\nPDF Content:\n" + pdf_text[:8000]
+        elif filename.endswith(".pdf"):
+            reader = PdfReader(image)
+            pdf_text = ""
 
-    elif filename.endswith(".docx"):
-        doc = Document(image)
-        doc_text = "\n".join(p.text for p in doc.paragraphs)
+            for page in reader.pages:
+                pdf_text += page.extract_text() or ""
 
-        # Limit DOCX size
-        message += "\n\nDocument Content:\n" + doc_text[:8000]
+            # Limit PDF size
+            message += "\n\nPDF Content:\n" + pdf_text[:8000]
 
-    elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
-        image_bytes = image.read()
-        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+        elif filename.endswith(".docx"):
+            doc = Document(image)
+            doc_text = "\n".join(p.text for p in doc.paragraphs)
 
-        ext = filename.split(".")[-1]
-        mime_type = "image/jpeg" if ext == "jpg" else f"image/{ext}"
+            # Limit DOCX size
+            message += "\n\nDocument Content:\n" + doc_text[:8000]
 
-        image_data_url = f"data:{mime_type};base64,{base64_image}"
+        elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
+            image_bytes = image.read()
+            base64_image = base64.b64encode(image_bytes).decode("utf-8")
 
+            ext = filename.split(".")[-1]
+            mime_type = "image/jpeg" if ext == "jpg" else f"image/{ext}"
+
+            image_data_url = f"data:{mime_type};base64,{base64_image}"
     if chat_id not in conversation_memory:
         conversation_memory[chat_id] = []
         
