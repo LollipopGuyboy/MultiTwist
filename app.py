@@ -161,17 +161,17 @@ def chat():
     
     # Execute Model Generation Call
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
-try:
-    ai_response = client.chat.completions.create(
-        model="google/gemma-3-4b-it:free",
-        messages=messages
-    )
+    try:
+        ai_response = client.chat.completions.create(
+            model="google/gemma-3-4b-it:free",
+            messages=messages
+        )
 
-    reply = ai_response.choices[0].message.content
+        reply = ai_response.choices[0].message.content
 
-except Exception as e:
-    print("OPENROUTER ERROR:", e)
-    return jsonify({"reply": str(e)})
+    except Exception as e:
+        print("OPENROUTER ERROR:", e)
+        return jsonify({"reply": str(e)})
 
     # Commit simplified strings to short-term memory to keep content payloads clean
     conversation_memory[chat_id].append({"role": "user", "content": message if not image_data_url else f"[Uploaded Image] {message}"})
