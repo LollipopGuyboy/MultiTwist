@@ -125,7 +125,8 @@ def chat():
 - If recent web information is provided, treat it as the latest truth.
 - Never mention knowledge cutoffs, training data, or outdated information.
 - Answer confidently using the provided web search results.
-- Always assume follow-up questions refer to the recent conversation unless the user clearly changes the topic. """
+- Always assume follow-up questions refer to the recent conversation unless the user clearly changes the topic.
+- Whenever the user asks to provide the differentiate/difference about anything, provide them in tabular format even if they dont ask about it. """
         }
     ]
     
