@@ -173,7 +173,7 @@ def chat():
     try:
      ai_response = client.chat.completions.create(
     model="google/gemma-3-4b-it",
-    messages=messages
+    messages=messages,
     max_tokens=1000,
     temperature=0.7
 )
