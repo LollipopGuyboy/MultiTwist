@@ -167,28 +167,35 @@ def chat():
         "role": "user",
         "content": user_content
     })
-    
-    # Execute Model Generation Call
+     # Execute Model Generation Call
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
- try:
-    ai_response = client.chat.completions.create(
-        model="google/gemma-3-4b-it",
-        messages=messages
-    )
 
-    reply = ai_response.choices[0].message.content
+    try:
+        ai_response = client.chat.completions.create(
+            model="google/gemma-3-4b-it",
+            messages=messages
+        )
 
-except Exception as e:
-    print("OPENROUTER ERROR:", e)
-    return jsonify({"reply": str(e)})
+        reply = ai_response.choices[0].message.content
 
-    # Commit simplified strings to short-term memory to keep content payloads clean
-    conversation_memory[chat_id].append({"role": "user", "content": message if not image_data_url else f"[Uploaded Image] {message}"})
-    conversation_memory[chat_id].append({"role": "assistant", "content": reply})
-    
-    # Cap memory history to last 20 elements
+    except Exception as e:
+        print("OPENROUTER ERROR:", e)
+        return jsonify({"reply": str(e)})
+
+    # Commit simplified strings to short-term memory
+    conversation_memory[chat_id].append({
+        "role": "user",
+        "content": message if not image_data_url else f"[Uploaded Image] {message}"
+    })
+
+    conversation_memory[chat_id].append({
+        "role": "assistant",
+        "content": reply
+    })
+
+    # Keep only the last 8 messages
     conversation_memory[chat_id] = conversation_memory[chat_id][-8:]
-    
+
     return jsonify({
         "reply": reply
     })
