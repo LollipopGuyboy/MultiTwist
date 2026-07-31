@@ -161,8 +161,7 @@ def chat():
     
     # Execute Model Generation Call
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
-
-    try:
+try:
     ai_response = client.chat.completions.create(
         model="google/gemma-3-4b-it:free",
         messages=messages
