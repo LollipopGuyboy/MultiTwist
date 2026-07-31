@@ -63,11 +63,13 @@ def chat():
         if filename.endswith(".txt"):
             message += "\n\nFile Content:\n" + image.read().decode("utf-8")
         elif filename.endswith(".pdf"):
-            reader = PdfReader(image)
-            pdf_text = ""
-            for page in reader.pages:
-                pdf_text += page.extract_text() or ""
-           message += "\n\nPDF Content:\n" + pdf_text[:8000]
+    reader = PdfReader(image)
+    pdf_text = ""
+
+    for page in reader.pages:
+        pdf_text += page.extract_text() or ""
+
+    message += "\n\nPDF Content:\n" + pdf_text[:8000]
         elif filename.endswith(".docx"):
             doc = Document(image)
             doc_text = "\n".join(p.text for p in doc.paragraphs)
