@@ -163,7 +163,7 @@ def chat():
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
     try:
         ai_response = client.chat.completions.create(
-            model="openrouter/auto"
+            model="openrouter/auto",
             messages=messages
         )
 
