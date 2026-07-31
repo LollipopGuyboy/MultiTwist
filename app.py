@@ -60,9 +60,10 @@ def chat():
     
     if image:
         filename = image.filename.lower()
-        if filename.endswith(".txt"):
-            message += "\n\nFile Content:\n" + image.read().decode("utf-8")
-        elif filename.endswith(".pdf"):
+       if filename.endswith(".txt"):
+    message += "\n\nFile Content:\n" + image.read().decode("utf-8")
+
+elif filename.endswith(".pdf"):
     reader = PdfReader(image)
     pdf_text = ""
 
@@ -70,14 +71,16 @@ def chat():
         pdf_text += page.extract_text() or ""
 
     message += "\n\nPDF Content:\n" + pdf_text[:8000]
-        elif filename.endswith(".docx"):
-            doc = Document(image)
-            doc_text = "\n".join(p.text for p in doc.paragraphs)
-            message += "\n\nDocument Content:\n" + doc_text
-        elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
-            # Convert image to Base64 for Vision Model processing
-            image_bytes = image.read()
-            base64_image = base64.b64encode(image_bytes).decode('utf-8')
+
+elif filename.endswith(".docx"):
+    doc = Document(image)
+    doc_text = "\n".join(p.text for p in doc.paragraphs)
+    message += "\n\nDocument Content:\n" + doc_text[:8000]
+
+elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
+    image_bytes = image.read()
+    base64_image = base64.b64encode(image_bytes).decode("utf-8")
+    ...
             mime_type = f"image/{filename.split('.')[-1]}"
             if mime_type == "image/jpg":
                 mime_type = "image/jpeg"
