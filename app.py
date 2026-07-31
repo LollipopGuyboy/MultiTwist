@@ -67,7 +67,7 @@ def chat():
             pdf_text = ""
             for page in reader.pages:
                 pdf_text += page.extract_text() or ""
-            message += "\n\nPDF Content:\n" + pdf_text
+           message += "\n\nPDF Content:\n" + pdf_text[:8000]
         elif filename.endswith(".docx"):
             doc = Document(image)
             doc_text = "\n".join(p.text for p in doc.paragraphs)
@@ -164,9 +164,11 @@ def chat():
     # Note: Ensure the OpenRouter free model chosen supports multimodal data if sending images.
     try:
         ai_response = client.chat.completions.create(
-            model="openrouter/auto",
-            messages=messages
-        )
+    model="google/gemma-3-4b-it:free",
+    messages=messages,
+    max_tokens=1000,
+    temperature=0.7
+)
 
         reply = ai_response.choices[0].message.content
 
@@ -179,7 +181,7 @@ def chat():
     conversation_memory[chat_id].append({"role": "assistant", "content": reply})
     
     # Cap memory history to last 20 elements
-    conversation_memory[chat_id] = conversation_memory[chat_id][-20:]
+    conversation_memory[chat_id] = conversation_memory[chat_id][-8:]
     
     return jsonify({
         "reply": reply
