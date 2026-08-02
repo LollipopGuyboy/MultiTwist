@@ -58,7 +58,7 @@ def chat():
     
     image_data_url = None
 
-   if image:
+    if image:
     filename = image.filename.lower()
 
     if filename.endswith(".txt"):
