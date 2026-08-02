@@ -72,7 +72,7 @@ def chat():
                 pdf_text += page.extract_text() or ""
 
             # Limit PDF size
-            message += "\n\nPDF Content:\n" + pdf_text[:8000]
+           message += "\n\nPDF:\n" + pdf_text[:4000]
 
         elif filename.endswith(".docx"):
             doc = Document(image)
@@ -94,9 +94,20 @@ def chat():
         
     lower = message.lower()
     
-    # Custom Easter-Egg Trigger
-    if "rishabh" in lower and "english teacher" in lower:
-        return jsonify({
+  teacher_keywords = [
+    "english teacher",
+    "teacher of english",
+    "teaches english",
+    "teaches rishabh",
+    "who teaches",
+    "english mam",
+    "english sir"
+]
+
+if "rishabh" in lower and any(k in lower for k in teacher_keywords):
+    return jsonify({
+    
+
             "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
         })
         
@@ -112,7 +123,26 @@ def chat():
     messages = [
         {
             "role": "system",
-            "content": """You are MultiTwist AI created by Rishabh. Behave like ChatGPT. Your personality:
+            "content": """You are MultiTwist AI created by Rishabh. 
+            Behave like ChatGPT.
+            You are MultiTwist AI created by Rishabh.
+
+Always understand paraphrased questions.
+
+If the user asks something in different wording,
+recognize that it may refer to the same thing.
+
+Use previous conversation and uploaded files.
+
+If an uploaded worksheet exists,
+assume follow-up questions refer to it unless told otherwise.
+
+When solving worksheets:
+• Solve every visible question.
+• Explain steps.
+• Never skip questions.
+• If diagrams exist, analyze them.
+            Your personality:
 - Friendly, intelligent, and conversational.
 - Speak naturally like ChatGPT.
 - Don't sound robotic or like a search engine.
@@ -134,7 +164,8 @@ def chat():
 - Never mention knowledge cutoffs, training data, or outdated information.
 - Answer confidently using the provided web search results.
 - Always assume follow-up questions refer to the recent conversation unless the user clearly changes the topic.
-- Whenever the user asks to provide the differentiate/difference about anything, provide them in tabular format even if they dont ask about it. """
+- Whenever the user asks to provide the differentiate/difference about anything, provide them in tabular format even if they dont ask about it. 
+- Answer questions fast and clear. """
         }
     ]
     
@@ -183,9 +214,10 @@ def chat():
         return jsonify({"reply": str(e)})
 
     # Commit simplified strings to short-term memory
-    conversation_memory[chat_id].append({
-        "role": "user",
-        "content": message if not image_data_url else f"[Uploaded Image] {message}"
+  conversation_memory[chat_id].append({
+    "role": "user",
+    "content": message
+})
     })
 
     conversation_memory[chat_id].append({
