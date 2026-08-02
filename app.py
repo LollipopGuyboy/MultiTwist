@@ -58,7 +58,7 @@ def chat():
     
     image_data_url = None
 
-    if image:
+if image:
     filename = image.filename.lower()
 
     if filename.endswith(".txt"):
@@ -80,6 +80,15 @@ def chat():
 
         # Limit DOCX size
         message += "\n\nDocument:\n" + doc_text[:4000]
+
+    elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
+        image_bytes = image.read()
+        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+
+        ext = filename.split(".")[-1]
+        mime_type = "image/jpeg" if ext == "jpg" else f"image/{ext}"
+
+        image_data_url = f"data:{mime_type};base64,{base64_image}"
 
         elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
             image_bytes = image.read()
