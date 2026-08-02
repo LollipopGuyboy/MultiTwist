@@ -50,13 +50,11 @@ def home():
 # ---------------------------- #
 @app.route("/chat", methods=["POST"])
 def chat():
-    message = request.form.get("message", "")
-    image = request.files.get("image")
-    
-    # Get session ID from client frontend to prevent cross-user memory leakage
-    chat_id = request.form.get("session_id", "default")
-    
-    image_data_url = None
+   message = request.form.get("message", "")
+image = request.files.get("image")
+chat_id = "default"
+
+image_data = None
 
 if image:
     filename = image.filename.lower()
@@ -71,36 +69,27 @@ if image:
         for page in reader.pages:
             pdf_text += page.extract_text() or ""
 
-        message += "\n\nPDF:\n" + pdf_text[:4000]
+        message += "\n\nPDF Content:\n" + pdf_text[:4000]
 
     elif filename.endswith(".docx"):
         doc = Document(image)
         doc_text = "\n".join(p.text for p in doc.paragraphs)
 
-        message += "\n\nDocument:\n" + doc_text[:4000]
+        message += "\n\nDocument Content:\n" + doc_text[:4000]
 
     elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
         image_bytes = image.read()
-        base64_image = base64.b64encode(image_bytes).decode("utf-8")
+        image_data = base64.b64encode(image_bytes).decode("utf-8")
 
-        ext = filename.split(".")[-1]
-        mime_type = "image/jpeg" if ext == "jpg" else f"image/{ext}"
+        # Temporary placeholder until you switch to a vision model
+        message += "\n\nThe user uploaded an image. Analyze it if possible."
 
-        image_data_url = f"data:{mime_type};base64,{base64_image}"
-        elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
-            image_bytes = image.read()
-            base64_image = base64.b64encode(image_bytes).decode("utf-8")
+if chat_id not in conversation_memory:
+    conversation_memory[chat_id] = {}
 
-            ext = filename.split(".")[-1]
-            mime_type = "image/jpeg" if ext == "jpg" else f"image/{ext}"
+lower = message.lower()
 
-            image_data_url = f"data:{mime_type};base64,{base64_image}"
-    if chat_id not in conversation_memory:
-        conversation_memory[chat_id] = []
-        
-    lower = message.lower()
-    
-  teacher_keywords = [
+teacher_keywords = [
     "english teacher",
     "teacher of english",
     "teaches english",
@@ -112,10 +101,8 @@ if image:
 
 if "rishabh" in lower and any(k in lower for k in teacher_keywords):
     return jsonify({
-    
-
-            "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
-        })
+        "reply": "Rishabh's English teacher is Shiva Mam 👑✨ — the most respected, elegant, beautiful, gorgeous, polite, humorous, brilliant, incredible, excellent, amazing, outstanding, fantastic, wonderful, kind, inspiring, and absolutely THE BEST English teacher ever! 🌟🏆"
+    })
         
     search_topics = [
         "who", "president", "prime minister", "ceo", "weather", "news", "price", "stock", 
