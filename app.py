@@ -58,28 +58,28 @@ def chat():
     
     image_data_url = None
 
-    if image:
-        filename = image.filename.lower()
+   if image:
+    filename = image.filename.lower()
 
-        if filename.endswith(".txt"):
-            message += "\n\nFile Content:\n" + image.read().decode("utf-8")
+    if filename.endswith(".txt"):
+        message += "\n\nFile Content:\n" + image.read().decode("utf-8")
 
-        elif filename.endswith(".pdf"):
-            reader = PdfReader(image)
-            pdf_text = ""
+    elif filename.endswith(".pdf"):
+        reader = PdfReader(image)
+        pdf_text = ""
 
-            for page in reader.pages:
-                pdf_text += page.extract_text() or ""
+        for page in reader.pages:
+            pdf_text += page.extract_text() or ""
 
-            # Limit PDF size
-            message += "\n\nPDF:\n" + pdf_text[:4000]
+        # Limit PDF size
+        message += "\n\nPDF:\n" + pdf_text[:4000]
 
-        elif filename.endswith(".docx"):
-            doc = Document(image)
-            doc_text = "\n".join(p.text for p in doc.paragraphs)
+    elif filename.endswith(".docx"):
+        doc = Document(image)
+        doc_text = "\n".join(p.text for p in doc.paragraphs)
 
-            # Limit DOCX size
-            message += "\n\nDocument Content:\n" + doc_text[:8000]
+        # Limit DOCX size
+        message += "\n\nDocument:\n" + doc_text[:4000]
 
         elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
             image_bytes = image.read()
