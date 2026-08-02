@@ -206,11 +206,10 @@ When solving worksheets:
         print("OPENROUTER ERROR:", e)
         return jsonify({"reply": str(e)})
 
-    # Commit simplified strings to short-term memory
-  conversation_memory[chat_id].append({
-    "role": "user",
-    "content": message
-})
+        # Commit simplified strings to short-term memory
+    conversation_memory[chat_id].append({
+        "role": "user",
+        "content": message
     })
 
     conversation_memory[chat_id].append({
