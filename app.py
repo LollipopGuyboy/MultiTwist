@@ -71,14 +71,12 @@ if image:
         for page in reader.pages:
             pdf_text += page.extract_text() or ""
 
-        # Limit PDF size
         message += "\n\nPDF:\n" + pdf_text[:4000]
 
     elif filename.endswith(".docx"):
         doc = Document(image)
         doc_text = "\n".join(p.text for p in doc.paragraphs)
 
-        # Limit DOCX size
         message += "\n\nDocument:\n" + doc_text[:4000]
 
     elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
@@ -89,7 +87,6 @@ if image:
         mime_type = "image/jpeg" if ext == "jpg" else f"image/{ext}"
 
         image_data_url = f"data:{mime_type};base64,{base64_image}"
-
         elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
             image_bytes = image.read()
             base64_image = base64.b64encode(image_bytes).decode("utf-8")
