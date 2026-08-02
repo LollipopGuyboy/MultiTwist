@@ -72,7 +72,7 @@ def chat():
                 pdf_text += page.extract_text() or ""
 
             # Limit PDF size
-           message += "\n\nPDF:\n" + pdf_text[:4000]
+            message += "\n\nPDF:\n" + pdf_text[:4000]
 
         elif filename.endswith(".docx"):
             doc = Document(image)
