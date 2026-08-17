@@ -1,10 +1,11 @@
 import os
+import base64
 import requests
 
 from flask import Flask, send_file, request, jsonify
 from PyPDF2 import PdfReader
 from docx import Document
-
+from groq import Groq
 
 # =========================================================
 # APP
