@@ -4,7 +4,6 @@ import requests
 from flask import Flask, send_file, request, jsonify
 from PyPDF2 import PdfReader
 from docx import Document
-from groq import Groq
 
 
 # =========================================================
@@ -195,7 +194,7 @@ def read_uploaded_file(uploaded_file):
 # AI SETTINGS
 # =========================================================
 
-MODEL_NAME = "llama-3.1-8b-instant"
+MODEL_NAME = "google/gemma-3-4b-it"
 
 MAX_CHUNK_CHARS = 7000
 
