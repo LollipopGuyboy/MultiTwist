@@ -28,8 +28,11 @@ client = OpenAI(
 # WEB SEARCH
 # ----------------------------
 def search_web(query):
-    url = "https://google.serper.dev/search"
+    if not SERPER_API_KEY:
+        print("WEB SEARCH ERROR: SERPER_API_KEY is missing.")
+        return {}
 
+    url = "https://google.serper.dev/search"
     headers = {
         "X-API-KEY": SERPER_API_KEY,
         "Content-Type": "application/json"
@@ -39,13 +42,18 @@ def search_web(query):
         response = requests.post(
             url,
             headers=headers,
-            json={"q": query}
+            json={"q": query},
+            timeout=15
         )
 
-        return response.json()
+        response.raise_for_status()
+        data = response.json()
+
+        print("WEB SEARCH SUCCESS:", query)
+        return data
 
     except Exception as e:
-        print("Search Error:", e)
+        print("WEB SEARCH ERROR:", str(e))
         return {}
 
 @app.route("/")
@@ -124,21 +132,22 @@ def chat():
         })
 
     # ----------------------------
-    # SEARCH DETECTION
-    # ----------------------------
-    search_topics = [
-        "who", "president", "prime minister", "ceo",
-        "weather", "news", "price", "stock",
-        "bitcoin", "crypto", "ipl", "cricket",
-        "football", "nba", "election", "government",
-        "minister", "company", "release", "latest",
-        "today", "current", "now", "recent",
-        "update", "live", "breaking", "2025",
-        "2026", "2027"
-    ]
+   # IMPROVED SEARCH DETECTION
+search_topics = [
+    "who is", "who's", "current", "currently", "latest", "today",
+    "right now", "this year", "2026", "2027", "2028",
+    "president", "prime minister", "chief minister", "ceo",
+    "weather", "news", "price", "stock", "bitcoin", "crypto",
+    "election", "minister", "government", "cricket", "football",
+    "ipl", "nba", "release date", "recent", "updated", "update",
+    "how much does", "when will", "has .* announced"
+]
 
-    need_search = any(topic in lower for topic in search_topics)
+need_search = any(topic in lower for topic in search_topics)
 
+# Search longer questions too, even without a keyword
+if len(message.split()) >= 12:
+    need_search = True
     # ----------------------------
     # SYSTEM PROMPT
     # ----------------------------
