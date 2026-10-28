@@ -374,6 +374,122 @@ button {
     background: linear-gradient(135deg, rgba(116,81,224,.24), rgba(57,102,206,.19));
 }
 
+/* Markdown formatting for assistant answers */
+.message.assistant .bubble {
+    white-space: normal;
+}
+
+.message-content p {
+    margin: 0 0 13px;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4 {
+    margin: 20px 0 10px;
+    line-height: 1.35;
+    font-weight: 800;
+    letter-spacing: -.25px;
+}
+
+.message-content h1 { font-size: 1.45em; }
+.message-content h2 { font-size: 1.28em; }
+.message-content h3 { font-size: 1.12em; }
+
+.message-content strong {
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.message-content em {
+    color: #e1dcff;
+}
+
+.message-content ul,
+.message-content ol {
+    padding-left: 24px;
+    margin: 10px 0 14px;
+}
+
+.message-content li {
+    margin: 5px 0;
+    padding-left: 2px;
+}
+
+.message-content a {
+    color: #b6a3ff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.message-content a:hover {
+    color: #d2c7ff;
+}
+
+.message-content blockquote {
+    margin: 12px 0;
+    padding: 8px 13px;
+    border-left: 3px solid var(--purple);
+    color: #d3d5e8;
+    background: rgba(152,116,255,.07);
+    border-radius: 0 8px 8px 0;
+}
+
+.message-content pre {
+    margin: 12px 0;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #090b16;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.message-content code {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: .92em;
+    background: rgba(255,255,255,.07);
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+.message-content pre code {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+}
+
+.message-content hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+}
+
+.message-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+
+.message-content th,
+.message-content td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+}
+
+.message-content th {
+    background: rgba(152,116,255,.12);
+}
+
 .bubble img {
     max-width: 100%;
     max-height: 260px;
@@ -771,6 +887,8 @@ button {
     </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 <script>
 const messageInput = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
@@ -857,8 +975,31 @@ function addMessage(role, text, imageUrl = null) {
     const bubble = document.createElement("div");
     bubble.className = "bubble";
 
-    // Use textContent so model output is not interpreted as HTML.
-    bubble.textContent = text;
+    // User messages stay plain text. Assistant replies render Markdown safely.
+    if (role === "assistant" && window.marked && window.DOMPurify) {
+        bubble.classList.add("message-content");
+        const renderedMarkdown = marked.parse(text, {
+            breaks: true,
+            gfm: true
+        });
+        bubble.innerHTML = DOMPurify.sanitize(renderedMarkdown, {
+            USE_PROFILES: { html: true }
+        });
+
+        // Open external links in a new tab safely.
+        bubble.querySelectorAll("a[href]").forEach(link => {
+            const url = new URL(link.href, window.location.href);
+            if (url.protocol === "http:" || url.protocol === "https:") {
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+            } else {
+                link.removeAttribute("href");
+            }
+        });
+    } else {
+        // Safe fallback if the Markdown libraries fail to load.
+        bubble.textContent = text;
+    }
 
     if (imageUrl) {
         const img = document.createElement("img");
