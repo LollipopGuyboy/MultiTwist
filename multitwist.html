@@ -172,6 +172,18 @@ button {
     box-shadow: 0 0 10px rgba(87,230,177,.6);
 }
 
+
+.history-section { min-height: 100px; }
+.chat-history { display: flex; flex-direction: column; gap: 5px; max-height: 42vh; overflow-y: auto; }
+.history-item { display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 9px; background: transparent; border: 1px solid transparent; }
+.history-item.active { background: var(--panel2); border-color: rgba(152,116,255,.22); }
+.history-open { min-width: 0; flex: 1; padding: 7px 5px; color: #c8cce0; background: transparent; border: 0; text-align: left; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-open:hover { color: white; }
+.history-action { flex: 0 0 auto; border: 0; border-radius: 6px; background: transparent; color: #9298b2; padding: 5px; font-size: 12px; }
+.history-action:hover { color: white; background: rgba(255,255,255,.08); }
+.history-empty { color: #777d98; font-size: 11px; padding: 4px 8px; line-height: 1.5; }
+@media (max-width: 760px) { .history-section { display: none; } }
+
 /* MAIN AREA */
 
 .main {
@@ -766,6 +778,11 @@ button {
 
         <button class="new-chat" id="newChatBtn">＋ &nbsp; New conversation</button>
 
+        <div class="history-section">
+            <div class="section-label">CHAT HISTORY</div>
+            <div id="chatHistory" class="chat-history" aria-live="polite"></div>
+        </div>
+
         <div>
             <div class="section-label">WORKSPACE</div>
 
@@ -901,6 +918,97 @@ const errorToast = document.getElementById("errorToast");
 
 let selectedFile = null;
 let isSending = false;
+let currentChatId = localStorage.getItem("multitwist_current_chat") || crypto.randomUUID();
+let chatList = [];
+localStorage.setItem("multitwist_current_chat", currentChatId);
+
+async function refreshChatHistory() {
+    const container = document.getElementById("chatHistory");
+    try {
+        const response = await fetch("/api/chats");
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load chats");
+        chatList = data.chats || [];
+        container.innerHTML = "";
+        if (!chatList.length) {
+            container.innerHTML = '<div class="history-empty">Your conversations will appear here.</div>';
+            return;
+        }
+        chatList.forEach(chat => {
+            const row = document.createElement("div");
+            row.className = "history-item" + (chat.id === currentChatId ? " active" : "");
+            const open = document.createElement("button");
+            open.className = "history-open";
+            open.type = "button";
+            open.textContent = chat.title || "New conversation";
+            open.title = chat.title || "New conversation";
+            open.addEventListener("click", () => openChat(chat.id));
+            const rename = document.createElement("button");
+            rename.className = "history-action"; rename.type = "button"; rename.textContent = "✎"; rename.title = "Rename chat";
+            rename.addEventListener("click", () => renameChat(chat.id, chat.title));
+            const del = document.createElement("button");
+            del.className = "history-action"; del.type = "button"; del.textContent = "×"; del.title = "Delete chat";
+            del.addEventListener("click", () => deleteChat(chat.id, chat.title));
+            row.append(open, rename, del); container.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Chat history error:", error);
+        container.innerHTML = '<div class="history-empty">History is temporarily unavailable.</div>';
+    }
+}
+
+async function openChat(chatId) {
+    if (isSending) return;
+    try {
+        const response = await fetch(`/api/chats/${encodeURIComponent(chatId)}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not open chat");
+        currentChatId = chatId;
+        localStorage.setItem("multitwist_current_chat", currentChatId);
+        messages.innerHTML = "";
+        (data.messages || []).forEach(item => addMessage(item.role, item.content));
+        welcome.style.display = (data.messages || []).length ? "none" : "";
+        clearError();
+        await refreshChatHistory();
+    } catch (error) { showError(error.message || "Could not open this chat."); }
+}
+
+async function renameChat(chatId, oldTitle) {
+    const title = prompt("Rename this conversation:", oldTitle || "");
+    if (title === null) return;
+    try {
+        const response = await fetch(`/api/chats/${encodeURIComponent(chatId)}`, {
+            method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({title})
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not rename chat");
+        await refreshChatHistory();
+    } catch (error) { showError(error.message || "Could not rename this chat."); }
+}
+
+async function deleteChat(chatId, title) {
+    if (!confirm(`Delete "${title || "this conversation"}"? This cannot be undone.`)) return;
+    try {
+        const response = await fetch(`/api/chats/${encodeURIComponent(chatId)}`, {method: "DELETE"});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not delete chat");
+        if (chatId === currentChatId) startNewChat(false);
+        await refreshChatHistory();
+    } catch (error) { showError(error.message || "Could not delete this chat."); }
+}
+
+function startNewChat(refresh = true) {
+    currentChatId = crypto.randomUUID();
+    localStorage.setItem("multitwist_current_chat", currentChatId);
+    messages.innerHTML = "";
+    welcome.style.display = "";
+    messageInput.value = "";
+    messageInput.style.height = "48px";
+    setSelectedFile(null);
+    clearError();
+    if (refresh) refreshChatHistory();
+    messageInput.focus();
+}
 
 function showError(message) {
     errorToast.textContent = message;
@@ -1086,6 +1194,7 @@ async function sendMessage() {
 
     // IMPORTANT: these names must match your Flask backend.
     formData.append("message", message);
+    formData.append("session_id", currentChatId);
 
     if (fileToSend) {
         // Your existing backend expects the upload field named "image".
@@ -1126,6 +1235,11 @@ async function sendMessage() {
         }
 
         addMessage("assistant", reply);
+        if (data.session_id) {
+            currentChatId = data.session_id;
+            localStorage.setItem("multitwist_current_chat", currentChatId);
+        }
+        await refreshChatHistory();
 
     } catch (error) {
         removeTypingIndicator();
@@ -1174,14 +1288,10 @@ document.querySelectorAll(".quick-card").forEach(button => {
     });
 });
 
-document.getElementById("newChatBtn").addEventListener("click", () => {
-    messages.innerHTML = "";
-    welcome.style.display = "";
-    messageInput.value = "";
-    messageInput.style.height = "48px";
-    setSelectedFile(null);
-    clearError();
-    messageInput.focus();
+document.getElementById("newChatBtn").addEventListener("click", () => startNewChat());
+refreshChatHistory().then(() => {
+    if (chatList.some(chat => chat.id === currentChatId)) openChat(currentChatId);
+    else startNewChat(false);
 });
 
 document.getElementById("uploadNav").addEventListener("click", () => {
