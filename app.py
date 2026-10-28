@@ -1,9 +1,11 @@
-
 import os
 import re
 import base64
 import requests
 from datetime import datetime, timezone
+import sqlite3
+import uuid
+from pathlib import Path
 from urllib.parse import urlparse
 
 from flask import Flask, request, jsonify, send_file
@@ -32,13 +34,75 @@ if OPENROUTER_API_KEY:
         max_retries=1
     )
 
-# Temporary conversation memory.
-# This is not permanent storage.
-conversation_memory = {}
+# Persistent SQLite chat storage. On Render, set DATA_DIR to your mounted disk path,
+# for example /var/data, so chats survive deploys/restarts.
+DATA_DIR = os.environ.get("DATA_DIR", ".")
+os.makedirs(DATA_DIR, exist_ok=True)
+DATABASE_PATH = os.path.join(DATA_DIR, "multitwist_chats.sqlite3")
 
 MAX_HISTORY_MESSAGES = 12
 MAX_FILE_TEXT = 12000
 MAX_SEARCH_RESULTS = 6
+
+# ==================================================
+# DATABASE HELPERS
+# ==================================================
+
+def db_connect():
+    connection = sqlite3.connect(DATABASE_PATH, timeout=20)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+def init_db():
+    with db_connect() as db:
+        db.execute("""CREATE TABLE IF NOT EXISTS chats (
+            id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+        )""")
+        db.execute("""CREATE TABLE IF NOT EXISTS chat_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, chat_id TEXT NOT NULL, role TEXT NOT NULL,
+            content TEXT NOT NULL, created_at TEXT NOT NULL,
+            FOREIGN KEY(chat_id) REFERENCES chats(id) ON DELETE CASCADE
+        )""")
+        db.execute("CREATE INDEX IF NOT EXISTS idx_chat_messages_chat_id ON chat_messages(chat_id, id)")
+        db.commit()
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+def ensure_chat(chat_id, title="New conversation"):
+    stamp = now_iso()
+    with db_connect() as db:
+        db.execute("INSERT OR IGNORE INTO chats (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)",
+                   (chat_id, title[:80], stamp, stamp))
+        db.commit()
+
+def save_chat_message(chat_id, role, content):
+    stamp = now_iso()
+    with db_connect() as db:
+        exists = db.execute("SELECT id FROM chats WHERE id = ?", (chat_id,)).fetchone()
+        if not exists:
+            db.execute("INSERT INTO chats (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)",
+                       (chat_id, "New conversation", stamp, stamp))
+        db.execute("INSERT INTO chat_messages (chat_id, role, content, created_at) VALUES (?, ?, ?, ?)",
+                   (chat_id, role, content, stamp))
+        if role == "user":
+            row = db.execute("SELECT title FROM chats WHERE id = ?", (chat_id,)).fetchone()
+            if row and row["title"] == "New conversation":
+                title = re.sub(r"\s+", " ", content).strip()[:48] or "New conversation"
+                db.execute("UPDATE chats SET title = ?, updated_at = ? WHERE id = ?", (title, stamp, chat_id))
+            else:
+                db.execute("UPDATE chats SET updated_at = ? WHERE id = ?", (stamp, chat_id))
+        else:
+            db.execute("UPDATE chats SET updated_at = ? WHERE id = ?", (stamp, chat_id))
+        db.commit()
+
+def get_chat_history(chat_id, limit=MAX_HISTORY_MESSAGES):
+    with db_connect() as db:
+        rows = db.execute("SELECT role, content FROM chat_messages WHERE chat_id = ? ORDER BY id DESC LIMIT ?",
+                          (chat_id, limit)).fetchall()
+    return [{"role": row["role"], "content": row["content"]} for row in reversed(rows)]
+
+init_db()
 
 # ==================================================
 # WEB SEARCH
@@ -264,6 +328,48 @@ def format_search_results(results):
 def home():
     return send_file("multitwist.html")
 
+
+# ==================================================
+# CHAT HISTORY API
+# ==================================================
+
+@app.route("/api/chats", methods=["GET"])
+def list_chats():
+    with db_connect() as db:
+        rows = db.execute("SELECT id, title, created_at, updated_at FROM chats ORDER BY updated_at DESC").fetchall()
+    return jsonify({"chats": [dict(row) for row in rows]})
+
+@app.route("/api/chats/<chat_id>", methods=["GET"])
+def load_chat(chat_id):
+    with db_connect() as db:
+        chat = db.execute("SELECT id, title, created_at, updated_at FROM chats WHERE id = ?", (chat_id,)).fetchone()
+        if not chat:
+            return jsonify({"error": "Chat not found."}), 404
+        rows = db.execute("SELECT role, content, created_at FROM chat_messages WHERE chat_id = ? ORDER BY id", (chat_id,)).fetchall()
+    return jsonify({"chat": dict(chat), "messages": [dict(row) for row in rows]})
+
+@app.route("/api/chats/<chat_id>", methods=["PATCH"])
+def rename_chat(chat_id):
+    data = request.get_json(silent=True) or {}
+    title = re.sub(r"\s+", " ", str(data.get("title", "")).strip())[:80]
+    if not title:
+        return jsonify({"error": "Enter a chat title."}), 400
+    with db_connect() as db:
+        result = db.execute("UPDATE chats SET title = ?, updated_at = ? WHERE id = ?", (title, now_iso(), chat_id))
+        db.commit()
+        if result.rowcount == 0:
+            return jsonify({"error": "Chat not found."}), 404
+    return jsonify({"ok": True, "id": chat_id, "title": title})
+
+@app.route("/api/chats/<chat_id>", methods=["DELETE"])
+def delete_chat(chat_id):
+    with db_connect() as db:
+        db.execute("DELETE FROM chat_messages WHERE chat_id = ?", (chat_id,))
+        result = db.execute("DELETE FROM chats WHERE id = ?", (chat_id,))
+        db.commit()
+        if result.rowcount == 0:
+            return jsonify({"error": "Chat not found."}), 404
+    return jsonify({"ok": True})
 
 # ==================================================
 # FILE EXTRACTION
@@ -512,18 +618,22 @@ def chat():
         })
 
     # ==================================================
-    # CONVERSATION HISTORY
+    # PERSISTENT CONVERSATION HISTORY
     # ==================================================
 
-    if chat_id not in conversation_memory:
-        conversation_memory[chat_id] = []
+    # Only accept a bounded identifier; create a chat if the browser sends a new ID.
+    try:
+        uuid.UUID(chat_id)
+    except (ValueError, AttributeError):
+        chat_id = str(uuid.uuid4())
+    ensure_chat(chat_id)
 
     messages = [{
         "role": "system",
         "content": SYSTEM_PROMPT
     }]
 
-    messages.extend(conversation_memory[chat_id])
+    messages.extend(get_chat_history(chat_id, MAX_HISTORY_MESSAGES))
 
     # ==================================================
     # WEB SEARCH
@@ -616,25 +726,11 @@ def chat():
             )
         }), 502
 
-    # ==================================================
-    # SAVE RECENT CONVERSATION IN RAM
-    # ==================================================
+    # Save both sides of the exchange persistently.
+    save_chat_message(chat_id, "user", full_user_message or message)
+    save_chat_message(chat_id, "assistant", reply)
 
-    conversation_memory[chat_id].append({
-        "role": "user",
-        "content": full_user_message or message
-    })
-
-    conversation_memory[chat_id].append({
-        "role": "assistant",
-        "content": reply
-    })
-
-    conversation_memory[chat_id] = conversation_memory[chat_id][
-        -MAX_HISTORY_MESSAGES:
-    ]
-
-    return jsonify({"reply": reply})
+    return jsonify({"reply": reply, "session_id": chat_id})
 
 
 # ==================================================
@@ -661,4 +757,3 @@ if __name__ == "__main__":
         port=int(os.environ.get("PORT", 5000)),
         debug=False
     )
-
