@@ -1,4 +1,4 @@
-```python
+python
 import os
 import re
 import base64
@@ -85,8 +85,8 @@ def search_web(query):
     except ValueError as exc:
         print(f"WEB SEARCH JSON ERROR: {exc}")
         return {}
-```
-```python
+
+python
 # ==================================================
 # SEARCH DETECTION
 # ==================================================
@@ -254,8 +254,8 @@ def format_search_results(results):
         )
 
     return "\n\n".join(sections)
-```
-```python
+
+python
 # ==================================================
 # HOME PAGE
 # ==================================================
@@ -596,8 +596,8 @@ def chat():
     ]
 
     return jsonify({"reply": reply})
-```
-```python
+
+python
 # ==================================================
 # HEALTH CHECK
 # ==================================================
@@ -622,4 +622,4 @@ if __name__ == "__main__":
         port=int(os.environ.get("PORT", 5000)),
         debug=False
     )
-```
+
