@@ -1,4 +1,4 @@
-python
+
 import os
 import re
 import base64
@@ -86,8 +86,8 @@ def search_web(query):
         print(f"WEB SEARCH JSON ERROR: {exc}")
         return {}
 
-python
-# ==================================================
+
+# ================================================
 # SEARCH DETECTION
 # ==================================================
 
@@ -255,7 +255,7 @@ def format_search_results(results):
 
     return "\n\n".join(sections)
 
-python
+
 # ==================================================
 # HOME PAGE
 # ==================================================
@@ -597,7 +597,7 @@ def chat():
 
     return jsonify({"reply": reply})
 
-python
+
 # ==================================================
 # HEALTH CHECK
 # ==================================================
