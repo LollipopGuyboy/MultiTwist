@@ -1,8 +1,12 @@
+openpyxl
+pandas
+pymupdf
+pytesseract
+Pillow
+python-docx
+PyPDF2
+openai
+requests
 Flask
 gunicorn
-requests
-openai
-PyPDF2
-python-docx
-Pillow
 groq
