@@ -1071,10 +1071,26 @@ let isSending = false;
  * Always create a fresh conversation ID when the page loads.
  * Older conversations remain saved in the Flask database and history list.
  */
+// Keep a separate visitor ID for this browser profile. The Flask backend
+// must use this ID to filter chat history and authorize chat operations.
+let visitorId = localStorage.getItem("multitwist_visitor_id");
+
+if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("multitwist_visitor_id", visitorId);
+}
+
 let currentChatId = crypto.randomUUID();
 let chatList = [];
 
 localStorage.setItem("multitwist_current_chat", currentChatId);
+
+function visitorHeaders(extraHeaders = {}) {
+    return {
+        ...extraHeaders,
+        "X-Visitor-ID": visitorId
+    };
+}
 
 /* MOBILE MENU */
 
@@ -1112,7 +1128,9 @@ async function refreshChatHistory() {
     const container = document.getElementById("chatHistory");
 
     try {
-        const response = await fetch("/api/chats");
+        const response = await fetch("/api/chats", {
+            headers: visitorHeaders()
+        });
         const data = await response.json();
 
         if (!response.ok) {
@@ -1187,7 +1205,8 @@ async function openChat(chatId) {
 
     try {
         const response = await fetch(
-            `/api/chats/${encodeURIComponent(chatId)}`
+            `/api/chats/${encodeURIComponent(chatId)}`,
+            { headers: visitorHeaders() }
         );
 
         const data = await response.json();
@@ -1230,9 +1249,9 @@ async function renameChat(chatId, oldTitle) {
             `/api/chats/${encodeURIComponent(chatId)}`,
             {
                 method: "PATCH",
-                headers: {
+                headers: visitorHeaders({
                     "Content-Type": "application/json"
-                },
+                }),
                 body: JSON.stringify({ title })
             }
         );
@@ -1261,7 +1280,8 @@ async function deleteChat(chatId, title) {
         const response = await fetch(
             `/api/chats/${encodeURIComponent(chatId)}`,
             {
-                method: "DELETE"
+                method: "DELETE",
+                headers: visitorHeaders()
             }
         );
 
@@ -1361,7 +1381,7 @@ fileInput.addEventListener("change", () => {
 
     if (file.size > 10 * 1024 * 1024) {
         showError(
-            "This file is larger than 100 MB. Please choose a smaller file."
+            "This file is larger than 10 MB. Please choose a smaller file."
         );
 
         setSelectedFile(null);
@@ -1535,6 +1555,7 @@ async function sendMessage() {
     try {
         const response = await fetch("/chat", {
             method: "POST",
+            headers: visitorHeaders(),
             body: formData
         });
 
