@@ -643,9 +643,9 @@ def chat():
             )
         }), 503
 
-    owner_id, auth_error = require_authenticated_user()
-    if auth_error:
-        return jsonify({"reply": "Please log in again to continue."}), 401
+    # Public visitors may chat without an account. Only authenticated chats
+    # are persisted and associated with an account; guest chats are ephemeral.
+    owner_id = get_authenticated_user_id()
 
     message = request.form.get("message", "").strip()
     uploaded_file = request.files.get("image")
@@ -722,15 +722,17 @@ def chat():
     # ==================================================
 
     # Create only for this visitor; reject IDs belonging to another visitor.
-    if not ensure_chat(chat_id, owner_id):
-        return jsonify({"reply": "That conversation isn't available in this browser. Start a new chat."}), 404
+    if owner_id and not ensure_chat(chat_id, owner_id):
+        return jsonify({"reply": "That conversation isn't available in this account. Start a new chat."}), 404
 
     messages = [{
         "role": "system",
         "content": SYSTEM_PROMPT
     }]
 
-    messages.extend(get_chat_history(chat_id, MAX_HISTORY_MESSAGES))
+    # Never load another user's stored messages for an unauthenticated visitor.
+    if owner_id:
+        messages.extend(get_chat_history(chat_id, MAX_HISTORY_MESSAGES))
 
     # ==================================================
     # WEB SEARCH
@@ -824,8 +826,9 @@ def chat():
         }), 502
 
     # Save both sides of the exchange persistently.
-    save_chat_message(chat_id, owner_id, "user", full_user_message or message)
-    save_chat_message(chat_id, owner_id, "assistant", reply)
+    if owner_id:
+        save_chat_message(chat_id, owner_id, "user", full_user_message or message)
+        save_chat_message(chat_id, owner_id, "assistant", reply)
 
     return jsonify({"reply": reply, "session_id": chat_id})
 
