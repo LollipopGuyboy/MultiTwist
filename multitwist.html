@@ -38,6 +38,9 @@ body {
 button, textarea {
     font: inherit;
 }
+    html {
+    scroll-behavior: smooth;
+}
 
 button {
     cursor: pointer;
@@ -1376,11 +1379,12 @@ document.getElementById("removeFileBtn").addEventListener("click", () => {
 /* MESSAGES */
 
 function scrollToBottom() {
-    window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth"
-    });
+window.scrollTo({
+top: document.documentElement.scrollHeight,
+behavior: "smooth"
+});
 }
+
 
 function addMessage(role, text, imageUrl = null) {
     const row = document.createElement("div");
