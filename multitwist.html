@@ -38,8 +38,7 @@ body {
 button, textarea {
     font: inherit;
 }
-
-html {
+    html {
     scroll-behavior: smooth;
 }
 
@@ -599,7 +598,8 @@ button {
 }
 
 /* COMPOSER */
-    .composer-wrap {
+
+.composer-wrap {
     padding: 0 25px 23px;
     width: 100%;
     max-width: 970px;
@@ -864,182 +864,45 @@ button {
     }
 }
 
-/* AUTH GATE */
-
-.auth-gate {
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
-    display: grid;
-    place-items: center;
-    padding: 20px;
-    background: #090a12;
-    background-image:
-        radial-gradient(ellipse at 10% 0%, rgba(112,70,255,.20), transparent 40%),
-        radial-gradient(ellipse at 90% 100%, rgba(49,126,255,.16), transparent 40%);
-}
-
-.auth-card {
-    width: min(100%, 420px);
-    padding: 28px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: rgba(17,19,32,.97);
-    box-shadow: 0 20px 80px rgba(0,0,0,.35);
-}
-
-.auth-card h1 {
-    font-size: 25px;
-    margin: 18px 0 8px;
-}
-
-.auth-card p {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
-    margin-bottom: 18px;
-}
-
-.auth-field {
-    width: 100%;
-    margin: 7px 0;
-    padding: 12px 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: white;
-    background: #0b0d18;
-    outline: none;
-}
-
-.auth-primary {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: 0;
-    border-radius: 10px;
-    color: white;
-    font-weight: 750;
-    background: linear-gradient(110deg,#8e69fa,#548bff);
-}
-
-.auth-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    justify-content: center;
-    margin-top: 16px;
-}
-
-.auth-links button {
-    color: #b6a3ff;
-    border: 0;
-    background: transparent;
-    font-size: 12px;
-}
-
-.auth-status {
-    min-height: 18px;
-    margin-top: 12px;
-    color: #ffb4b4;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.account-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.account-email {
-    color: var(--muted);
-    font-size: 11px;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.auth-secondary {
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    padding: 8px 10px;
-    background: var(--panel2);
-    color: white;
-    font-size: 11px;
-}
+/* AUTH MODAL (the website remains usable without logging in) */
+.auth-gate { position: fixed; inset: 0; z-index: 3000; display: none; place-items: center; padding: 20px; background: #090a12; background-image: radial-gradient(ellipse at 10% 0%, rgba(112,70,255,.20), transparent 40%), radial-gradient(ellipse at 90% 100%, rgba(49,126,255,.16), transparent 40%); }
+.auth-card { width: min(100%, 420px); padding: 28px; border: 1px solid var(--border); border-radius: 20px; background: rgba(17,19,32,.97); box-shadow: 0 20px 80px rgba(0,0,0,.35); }
+.auth-card h1 { font-size: 25px; margin: 18px 0 8px; }
+.auth-card p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
+.auth-field { width: 100%; margin: 7px 0; padding: 12px 13px; border: 1px solid var(--border); border-radius: 10px; color: white; background: #0b0d18; outline: none; }
+.auth-primary { width: 100%; padding: 12px; margin-top: 10px; border: 0; border-radius: 10px; color: white; font-weight: 750; background: linear-gradient(110deg,#8e69fa,#548bff); }
+.auth-links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 16px; }
+.auth-links button { color: #b6a3ff; border: 0; background: transparent; font-size: 12px; }
+.auth-status { min-height: 18px; margin-top: 12px; color: #ffb4b4; font-size: 12px; line-height: 1.5; }
+.account-controls { display:flex; align-items:center; gap:8px; }
+.account-email { color: var(--muted); font-size:11px; max-width:180px; overflow:hidden; text-overflow:ellipsis; }
+.auth-secondary { border:1px solid var(--border); border-radius:9px; padding:8px 10px; background:var(--panel2); color:white; font-size:11px; }
 
 </style>
 </head>
 
 <body>
 
-<!-- SUPABASE LOGIN / SIGNUP SCREEN -->
 
 <div class="auth-gate" id="authGate">
-    <section class="auth-card" aria-labelledby="authTitle">
-
-        <div class="brand">
-            <div class="logo">✦</div>
-            <div>
-                <div class="brand-name">MultiTwist AI</div>
-                <div class="brand-sub">Your AI workspace</div>
-            </div>
-        </div>
-
-        <h1 id="authTitle">Welcome back</h1>
-
-        <p id="authDescription">
-            Log in to access your private conversations.
-        </p>
-
-        <form id="authForm">
-            <input
-                class="auth-field"
-                id="authEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="Email address"
-                required
-            >
-
-            <input
-                class="auth-field"
-                id="authPassword"
-                type="password"
-                autocomplete="current-password"
-                placeholder="Password (at least 8 characters)"
-                minlength="8"
-                required
-            >
-
-            <button class="auth-primary" id="authSubmit" type="submit">
-                Log in
-            </button>
-        </form>
-
-        <div
-            class="auth-status"
-            id="authStatus"
-            role="status"
-            aria-live="polite"
-        ></div>
-
-        <div class="auth-links">
-            <button type="button" id="authToggle">
-                Create an account
-            </button>
-
-            <button type="button" id="authForgot">
-                Forgot password?
-            </button>
-        </div>
-
-    </section>
+  <section class="auth-card" aria-labelledby="authTitle" style="position:relative;"><button type="button" id="authClose" aria-label="Close sign in" style="position:absolute;right:14px;top:12px;border:0;background:transparent;color:#a1a5bc;font-size:24px;cursor:pointer;">×</button>
+    <div class="brand"><div class="logo">✦</div><div><div class="brand-name">MultiTwist AI</div><div class="brand-sub">Your AI workspace</div></div></div>
+    <h1 id="authTitle">Welcome back</h1>
+    <p id="authDescription">Log in to access your private conversations.</p>
+    <form id="authForm">
+      <input class="auth-field" id="authEmail" type="email" autocomplete="email" placeholder="Email address" required>
+      <input class="auth-field" id="authPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" minlength="8" required>
+      <button class="auth-primary" id="authSubmit" type="submit">Log in</button>
+    </form>
+    <div class="auth-status" id="authStatus" role="status" aria-live="polite"></div>
+    <div class="auth-links">
+      <button type="button" id="authToggle">Create an account</button>
+      <button type="button" id="authForgot">Forgot password?</button>
+    </div>
+  </section>
 </div>
 
 <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
-
-<!-- MAIN APPLICATION -->
 
 <div class="app">
 
@@ -1066,29 +929,25 @@ button {
             <div class="section-label">WORKSPACE</div>
 
             <button class="nav-item active" id="chatNav" type="button">
-                <span class="nav-icon">◈</span>
-                AI Assistant
+                <span class="nav-icon">◈</span> AI Assistant
             </button>
 
             <button class="nav-item" id="uploadNav" type="button">
-                <span class="nav-icon">▧</span>
-                File & worksheet help
+                <span class="nav-icon">▧</span> File & worksheet help
             </button>
 
             <button class="nav-item" id="ideasNav" type="button">
-                <span class="nav-icon">✧</span>
-                Ideas & creativity
+                <span class="nav-icon">✧</span> Ideas & creativity
             </button>
         </div>
 
         <div class="sidebar-bottom">
+            <button class="new-chat" id="signInBtn" type="button" style="margin-bottom:14px;">↗ &nbsp; Sign in / Create account</button>
             <div class="section-label">YOUR AI SPACE</div>
-
             <div class="status-card">
                 <div class="status-title">✦ Made to explore</div>
                 <div class="status-text">
-                    Ask questions, explore ideas, and work through problems
-                    with MultiTwist AI.
+                    Ask questions, explore ideas, and work through problems with MultiTwist AI.
                 </div>
             </div>
         </div>
@@ -1100,7 +959,6 @@ button {
         <header class="topbar">
 
             <div class="topbar-left">
-
                 <button
                     type="button"
                     id="mobileMenuBtn"
@@ -1111,24 +969,14 @@ button {
 
                 <div>
                     <div class="page-title">AI Assistant</div>
-                    <div class="page-subtitle">
-                        A little twist makes a big difference.
-                    </div>
+                    <div class="page-subtitle">A little twist makes a big difference.</div>
                 </div>
-
             </div>
 
             <div class="account-controls">
                 <span class="account-email" id="accountEmail"></span>
-
-                <button class="auth-secondary" id="logoutBtn" type="button">
-                    Log out
-                </button>
-
-                <div class="model-pill">
-                    <span class="model-dot"></span>
-                    MultiTwist assistant
-                </div>
+                <button class="auth-secondary" id="logoutBtn" type="button" style="display:none;">Log out</button>
+                <div class="model-pill"><span class="model-dot"></span>MultiTwist assistant</div>
             </div>
 
         </header>
@@ -1136,54 +984,39 @@ button {
         <section class="chat-area">
 
             <div class="welcome" id="welcome">
-
                 <div class="welcome-icon">✦</div>
 
                 <h1>
                     Hey there!<br>
-                    <span class="gradient-text">
-                        What are we exploring?
-                    </span>
+                    <span class="gradient-text">What are we exploring?</span>
                 </h1>
 
                 <p>
-                    Your space to ask questions, solve problems, understand
-                    worksheets, and turn random ideas into something awesome.
+                    Your space to ask questions, solve problems, understand worksheets,
+                    and turn random ideas into something awesome.
                 </p>
 
                 <div class="quick-actions">
 
-                    <button
-                        class="quick-card"
-                        data-prompt="Explain a difficult topic to me step by step, using simple examples."
-                    >
+                    <button class="quick-card" data-prompt="Explain a difficult topic to me step by step, using simple examples.">
                         <span class="emoji">🧠</span>
                         <strong>Explain anything</strong>
                         <small>Make difficult topics easier to understand.</small>
                     </button>
 
-                    <button
-                        class="quick-card"
-                        data-prompt="Help me solve a worksheet step by step. Explain the reasoning behind each answer."
-                    >
+                    <button class="quick-card" data-prompt="Help me solve a worksheet step by step. Explain the reasoning behind each answer.">
                         <span class="emoji">📚</span>
                         <strong>Worksheet helper</strong>
                         <small>Work through questions one at a time.</small>
                     </button>
 
-                    <button
-                        class="quick-card"
-                        data-prompt="Give me five creative and useful project ideas, with a short explanation of each."
-                    >
+                    <button class="quick-card" data-prompt="Give me five creative and useful project ideas, with a short explanation of each.">
                         <span class="emoji">💡</span>
                         <strong>Brainstorm ideas</strong>
                         <small>Explore projects and creative possibilities.</small>
                     </button>
 
-                    <button
-                        class="quick-card"
-                        data-prompt="Help me write, improve, and organize something. Ask me what I am working on if needed."
-                    >
+                    <button class="quick-card" data-prompt="Help me write, improve, and organize something. Ask me what I am working on if needed.">
                         <span class="emoji">✍️</span>
                         <strong>Writing studio</strong>
                         <small>Organize your thoughts and polish your writing.</small>
@@ -1196,8 +1029,6 @@ button {
 
         </section>
 
-        <!-- MESSAGE COMPOSER -->
-
         <div class="composer-wrap">
 
             <div class="toast" id="errorToast"></div>
@@ -1207,13 +1038,7 @@ button {
                 <div class="file-info" id="fileInfo">
                     <span>📎</span>
                     <span class="file-name" id="fileName"></span>
-
-                    <button
-                        class="remove-file"
-                        id="removeFileBtn"
-                        type="button"
-                        aria-label="Remove file"
-                    >×</button>
+                    <button class="remove-file" id="removeFileBtn" type="button" aria-label="Remove file">×</button>
                 </div>
 
                 <textarea
@@ -1226,7 +1051,6 @@ button {
                 <div class="composer-bottom">
 
                     <div class="composer-tools">
-
                         <button class="tool-btn" id="attachBtn" type="button">
                             ＋ Attach file
                         </button>
@@ -1241,7 +1065,6 @@ button {
                         <span style="font-size:10px;color:#737993;">
                             Enter to send · Shift+Enter for new line
                         </span>
-
                     </div>
 
                     <button class="send-btn" id="sendBtn" type="button">
@@ -1259,8 +1082,6 @@ button {
 
     </main>
 </div>
-
-<!-- JAVASCRIPT LIBRARIES -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1284,722 +1105,777 @@ let selectedFile = null;
 let isSending = false;
 
 /*
- * Supabase configuration.
- * Replace these placeholders with your project's actual values.
+ * Always create a fresh conversation ID when the page loads.
+ * Older conversations remain saved in the Flask database and history list.
  */
-const SUPABASE_URL = https://fbzgybrgyayipdkvvgwk.supabase.co/;
+// Set these to the Project URL and publishable key from your Supabase dashboard.
+const SUPABASE_URL =https://fbzgybrgyayipdkvvgwk.supabase.co/;
 const SUPABASE_PUBLISHABLE_KEY = sb_publishable_4xzD5HPVZ9mtW2cpR02rcw_CwsR_gMU;
+const SUPABASE_CONFIGURED = /^https:\/\//i.test(SUPABASE_URL) &&
+    !SUPABASE_URL.includes("YOUR_SUPABASE") &&
+    !!SUPABASE_PUBLISHABLE_KEY &&
+    !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_SUPABASE");
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
-
+// Keep the public website usable even before Supabase is configured.
+const unavailableAuth = async () => ({
+    data: { session: null },
+    error: new Error("Supabase is not configured. Add your project URL and publishable key first.")
+});
+const supabaseClient = SUPABASE_CONFIGURED
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    : {
+        auth: {
+            getSession: async () => ({ data: { session: null }, error: null }),
+            onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
+            signInWithPassword: unavailableAuth,
+            signUp: unavailableAuth,
+            resetPasswordForEmail: unavailableAuth,
+            updateUser: unavailableAuth,
+            signOut: async () => ({ error: null })
+        }
+    };
 let currentSession = null;
 let authMode = "login";
 let currentChatId = crypto.randomUUID();
 let chatList = [];
-
 localStorage.setItem("multitwist_current_chat", currentChatId);
-    .composer-wrap {
-    padding: 0 25px 23px;
-    width: 100%;
-    max-width: 970px;
-    margin: 0 auto;
+
+async function authHeaders(extraHeaders = {}) {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error || !data.session) throw new Error("Please log in again to continue.");
+    currentSession = data.session;
+    return { ...extraHeaders, "Authorization": `Bearer ${data.session.access_token}` };
 }
 
-.composer {
-    padding: 12px;
-    border: 1px solid rgba(157,133,255,.25);
-    background: rgba(19,21,36,.94);
-    border-radius: 19px;
-    box-shadow: 0 12px 45px rgba(0,0,0,.15);
-    transition: border-color .2s, box-shadow .2s;
+/* MOBILE MENU */
+
+function openMobileSidebar() {
+    sidebar.classList.add("mobile-open");
+    mobileBackdrop.classList.add("show");
+    mobileMenuBtn.setAttribute("aria-expanded", "true");
 }
 
-.composer:focus-within {
-    border-color: rgba(157,133,255,.65);
-    box-shadow: 0 0 0 3px rgba(130,95,255,.07);
+function closeMobileSidebar() {
+    sidebar.classList.remove("mobile-open");
+    mobileBackdrop.classList.remove("show");
+    mobileMenuBtn.setAttribute("aria-expanded", "false");
 }
 
-#messageInput {
-    width: 100%;
-    min-height: 48px;
-    max-height: 180px;
-    resize: none;
-    outline: none;
-    border: 0;
-    background: transparent;
-    color: white;
-    font-size: 13px;
-    line-height: 1.6;
-    padding: 7px 6px;
-}
-
-#messageInput::placeholder {
-    color: #777d98;
-}
-
-.composer-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding-top: 7px;
-}
-
-.composer-tools {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-}
-
-.tool-btn {
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,.025);
-    color: #c5c9dd;
-    padding: 8px 10px;
-    border-radius: 10px;
-    font-size: 11px;
-}
-
-.tool-btn:hover {
-    color: white;
-    background: rgba(255,255,255,.08);
-}
-
-.send-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    border: 0;
-    border-radius: 11px;
-    padding: 10px 15px;
-    color: white;
-    font-size: 12px;
-    font-weight: 750;
-    background: linear-gradient(110deg, #8e69fa, #548bff);
-    box-shadow: 0 4px 18px rgba(110,105,255,.2);
-}
-
-.send-btn:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-}
-
-.file-info {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    margin: 4px 4px 9px;
-    padding: 9px 10px;
-    background: rgba(132,102,255,.1);
-    border: 1px solid rgba(132,102,255,.2);
-    border-radius: 10px;
-    font-size: 11px;
-    color: #d7ccff;
-}
-
-.file-info.show {
-    display: flex;
-}
-
-.file-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-}
-
-.remove-file {
-    background: transparent;
-    border: 0;
-    color: white;
-    font-size: 17px;
-}
-
-.disclaimer {
-    color: #70758c;
-    text-align: center;
-    font-size: 10px;
-    padding-top: 11px;
-}
-
-.toast {
-    display: none;
-    color: #ffb4b4;
-    background: rgba(255,70,90,.08);
-    border: 1px solid rgba(255,90,100,.2);
-    padding: 11px 13px;
-    border-radius: 10px;
-    font-size: 12px;
-    margin-bottom: 12px;
-}
-
-.toast.show {
-    display: block;
-}
-
-/* MOBILE SIDEBAR */
-
-.mobile-sidebar-backdrop {
-    display: none;
-}
-
-@media (max-width: 760px) {
-    .app {
-        display: block;
+mobileMenuBtn.addEventListener("click", () => {
+    if (sidebar.classList.contains("mobile-open")) {
+        closeMobileSidebar();
+    } else {
+        openMobileSidebar();
     }
+});
 
-    .sidebar {
-        display: flex;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: min(85vw, 320px);
-        min-height: 100vh;
-        overflow-y: auto;
-        z-index: 1001;
-        transform: translateX(-105%);
-        transition: transform .25s ease;
-        box-shadow: none;
-        background: #0b0c16;
+mobileBackdrop.addEventListener("click", closeMobileSidebar);
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeMobileSidebar();
     }
+});
 
-    .sidebar.mobile-open {
-        transform: translateX(0);
-        box-shadow: 10px 0 35px rgba(0,0,0,.4);
-    }
+/* CHAT HISTORY */
 
-    .mobile-menu-btn {
-        display: block;
-        flex-shrink: 0;
-    }
+async function refreshChatHistory() {
+    const container = document.getElementById("chatHistory");
 
-    .mobile-sidebar-backdrop.show {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        background: rgba(0,0,0,.65);
-    }
+    try {
+        const response = await fetch("/api/chats", {
+            headers: await authHeaders()
+        });
+        const data = await response.json();
 
-    .history-section {
-        display: block;
-    }
+        if (!response.ok) {
+            throw new Error(data.error || "Could not load chats");
+        }
 
-    .chat-history {
-        max-height: 42vh;
-    }
+        chatList = data.chats || [];
+        container.innerHTML = "";
 
-    .topbar {
-        min-height: 65px;
-        padding: 10px 14px;
-        gap: 8px;
-    }
+        if (!chatList.length) {
+            container.innerHTML =
+                '<div class="history-empty">Your conversations will appear here.</div>';
+            return;
+        }
 
-    .page-title {
-        font-size: 14px;
-    }
+        chatList.forEach(chat => {
+            const row = document.createElement("div");
 
-    .page-subtitle {
-        font-size: 10px;
-    }
+            row.className =
+                "history-item" +
+                (chat.id === currentChatId ? " active" : "");
 
-    .model-pill {
-        font-size: 10px;
-        padding: 8px;
-    }
+            const open = document.createElement("button");
+            open.className = "history-open";
+            open.type = "button";
+            open.textContent = chat.title || "New conversation";
+            open.title = chat.title || "New conversation";
 
-    .chat-area {
-        padding: 22px 16px 14px;
-    }
+            open.addEventListener("click", async () => {
+                await openChat(chat.id);
+                closeMobileSidebar();
+            });
 
-    .welcome {
-        margin-top: 30px;
-        margin-bottom: 24px;
-    }
+            const rename = document.createElement("button");
+            rename.className = "history-action";
+            rename.type = "button";
+            rename.textContent = "✎";
+            rename.title = "Rename chat";
+            rename.setAttribute("aria-label", "Rename chat");
 
-    .welcome h1 {
-        letter-spacing: -1px;
-    }
+            rename.addEventListener("click", async event => {
+                event.stopPropagation();
+                await renameChat(chat.id, chat.title);
+            });
 
-    .quick-actions {
-        gap: 9px;
-    }
+            const del = document.createElement("button");
+            del.className = "history-action";
+            del.type = "button";
+            del.textContent = "×";
+            del.title = "Delete chat";
+            del.setAttribute("aria-label", "Delete chat");
 
-    .quick-card {
-        padding: 13px;
-    }
+            del.addEventListener("click", async event => {
+                event.stopPropagation();
+                await deleteChat(chat.id, chat.title);
+            });
 
-    .composer-wrap {
-        padding: 0 12px 15px;
-    }
+            row.append(open, rename, del);
+            container.appendChild(row);
+        });
 
-    .bubble {
-        max-width: 88%;
+    } catch (error) {
+        console.error("Chat history error:", error);
+
+        container.innerHTML =
+            '<div class="history-empty">History is temporarily unavailable.</div>';
     }
 }
 
-@media (max-width: 430px) {
-    .model-pill {
-        max-width: 125px;
-        overflow: hidden;
-        text-overflow: ellipsis;
+async function openChat(chatId) {
+    if (isSending) return;
+
+    try {
+        const response = await fetch(
+            `/api/chats/${encodeURIComponent(chatId)}`,
+            { headers: await authHeaders() }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not open chat");
+        }
+
+        currentChatId = chatId;
+        localStorage.setItem("multitwist_current_chat", currentChatId);
+
+        messages.innerHTML = "";
+
+        const chatMessages = data.messages || [];
+
+        chatMessages.forEach(item => {
+            addMessage(item.role, item.content);
+        });
+
+        welcome.style.display = chatMessages.length ? "none" : "";
+
+        clearError();
+        await refreshChatHistory();
+
+    } catch (error) {
+        showError(error.message || "Could not open this chat.");
+    }
+}
+
+async function renameChat(chatId, oldTitle) {
+    const title = prompt(
+        "Rename this conversation:",
+        oldTitle || ""
+    );
+
+    if (title === null) return;
+
+    try {
+        const response = await fetch(
+            `/api/chats/${encodeURIComponent(chatId)}`,
+            {
+                method: "PATCH",
+                headers: await authHeaders({
+                    "Content-Type": "application/json"
+                }),
+                body: JSON.stringify({ title })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not rename chat");
+        }
+
+        await refreshChatHistory();
+
+    } catch (error) {
+        showError(error.message || "Could not rename this chat.");
+    }
+}
+
+async function deleteChat(chatId, title) {
+    const confirmed = confirm(
+        `Delete "${title || "this conversation"}"? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(
+            `/api/chats/${encodeURIComponent(chatId)}`,
+            {
+                method: "DELETE",
+                headers: await authHeaders()
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not delete chat");
+        }
+
+        if (chatId === currentChatId) {
+            startNewChat(false);
+        }
+
+        await refreshChatHistory();
+
+    } catch (error) {
+        showError(error.message || "Could not delete this chat.");
+    }
+}
+
+/* NEW CHAT */
+
+function startNewChat(refresh = true) {
+    if (isSending) return;
+
+    currentChatId = crypto.randomUUID();
+
+    localStorage.setItem("multitwist_current_chat", currentChatId);
+
+    messages.innerHTML = "";
+    welcome.style.display = "";
+    messageInput.value = "";
+    messageInput.style.height = "48px";
+
+    setSelectedFile(null);
+    clearError();
+    closeMobileSidebar();
+
+    if (refresh) {
+        refreshChatHistory();
     }
 
-    .composer-tools span {
-        display: none;
+    messageInput.focus();
+}
+
+document.getElementById("newChatBtn").addEventListener("click", () => {
+    startNewChat();
+});
+
+/* ERRORS */
+
+function showError(message) {
+    errorToast.textContent = message;
+    errorToast.classList.add("show");
+}
+
+function clearError() {
+    errorToast.textContent = "";
+    errorToast.classList.remove("show");
+}
+
+/* FILE ATTACHMENTS */
+
+function setSelectedFile(file) {
+    selectedFile = file || null;
+
+    if (selectedFile) {
+        fileName.textContent = selectedFile.name;
+        fileInfo.classList.add("show");
+    } else {
+        fileName.textContent = "";
+        fileInfo.classList.remove("show");
+        fileInput.value = "";
     }
 }
 
-@media (max-width: 380px) {
-    .quick-actions {
-        grid-template-columns: 1fr;
+document.getElementById("attachBtn").addEventListener("click", () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+
+    if (!file) return;
+
+    const allowedExtensions =
+        /\.(png|jpe?g|gif|webp|pdf|doc|docx|txt)$/i;
+
+    if (!allowedExtensions.test(file.name)) {
+        showError(
+            "That file type isn't supported. Try an image, PDF, DOC, DOCX, or TXT file."
+        );
+
+        setSelectedFile(null);
+        return;
     }
 
-    .quick-card {
-        padding: 12px;
+    if (file.size > 10 * 1024 * 1024) {
+        showError(
+            "This file is larger than 10 MB. Please choose a smaller file."
+        );
+
+        setSelectedFile(null);
+        return;
+    }
+
+    clearError();
+    setSelectedFile(file);
+});
+
+document.getElementById("removeFileBtn").addEventListener("click", () => {
+    setSelectedFile(null);
+});
+
+/* MESSAGES */
+
+function scrollToBottom() {
+window.scrollTo({
+top: document.documentElement.scrollHeight,
+behavior: "smooth"
+});
+}
+
+
+function addMessage(role, text, imageUrl = null) {
+    const row = document.createElement("div");
+    row.className = `message ${role}`;
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = role === "user" ? "👤" : "✦";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    if (role === "assistant" && window.marked && window.DOMPurify) {
+        bubble.classList.add("message-content");
+
+        const renderedMarkdown = marked.parse(text, {
+            breaks: true,
+            gfm: true
+        });
+
+        bubble.innerHTML = DOMPurify.sanitize(renderedMarkdown, {
+            USE_PROFILES: { html: true }
+        });
+
+        bubble.querySelectorAll("a[href]").forEach(link => {
+            const url = new URL(link.href, window.location.href);
+
+            if (url.protocol === "http:" || url.protocol === "https:") {
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+            } else {
+                link.removeAttribute("href");
+            }
+        });
+
+    } else {
+        bubble.textContent = text;
+    }
+
+    if (imageUrl) {
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "Attached image preview";
+        bubble.appendChild(img);
+    }
+
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    messages.appendChild(row);
+
+    scrollToBottom();
+
+    return row;
+}
+
+function addTypingIndicator() {
+    const row = document.createElement("div");
+    row.className = "message assistant";
+    row.id = "typingIndicator";
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = "✦";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    const typing = document.createElement("div");
+    typing.className = "typing";
+
+    for (let i = 0; i < 3; i++) {
+        typing.appendChild(document.createElement("span"));
+    }
+
+    bubble.appendChild(typing);
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    messages.appendChild(row);
+
+    scrollToBottom();
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById("typingIndicator");
+
+    if (indicator) {
+        indicator.remove();
     }
 }
 
-/* AUTH GATE */
+/* SEND MESSAGE */
 
-.auth-gate {
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
-    display: grid;
-    place-items: center;
-    padding: 20px;
-    background: #090a12;
-    background-image:
-        radial-gradient(ellipse at 10% 0%, rgba(112,70,255,.20), transparent 40%),
-        radial-gradient(ellipse at 90% 100%, rgba(49,126,255,.16), transparent 40%);
+async function sendMessage() {
+    if (isSending) return;
+
+    const message = messageInput.value.trim();
+
+    if (!message && !selectedFile) {
+        messageInput.focus();
+        return;
+    }
+
+    clearError();
+    welcome.style.display = "none";
+
+    const fileToSend = selectedFile;
+
+    const imagePreviewUrl =
+        fileToSend && fileToSend.type.startsWith("image/")
+            ? URL.createObjectURL(fileToSend)
+            : null;
+
+    let displayText = message;
+
+    if (fileToSend) {
+        displayText =
+            (message ? message + "\n\n" : "") +
+            "📎 " + fileToSend.name;
+    }
+
+    addMessage(
+        "user",
+        displayText || "Please help me with this file.",
+        imagePreviewUrl
+    );
+
+    messageInput.value = "";
+    messageInput.style.height = "48px";
+
+    isSending = true;
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = 'Thinking <span>✦</span>';
+
+    addTypingIndicator();
+
+    const formData = new FormData();
+
+    // These field names must match your Flask backend.
+    formData.append("message", message);
+    formData.append("session_id", currentChatId);
+
+    if (fileToSend) {
+        formData.append("image", fileToSend);
+    }
+
+    setSelectedFile(null);
+
+    try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const optionalHeaders = sessionData.session
+            ? { "Authorization": `Bearer ${sessionData.session.access_token}` }
+            : {};
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: optionalHeaders,
+            body: formData
+        });
+
+        let data;
+
+        try {
+            data = await response.json();
+        } catch {
+            throw new Error(
+                "The server returned an unexpected response. Check your Flask logs."
+            );
+        }
+
+        removeTypingIndicator();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                data.reply ||
+                `Server error (${response.status}).`
+            );
+        }
+
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        const reply = data.reply || data.response || data.message;
+
+        if (typeof reply !== "string" || !reply.trim()) {
+            throw new Error(
+                "The server returned no answer. Check your backend's JSON response."
+            );
+        }
+
+        addMessage("assistant", reply);
+
+        if (data.session_id) {
+            currentChatId = data.session_id;
+
+            localStorage.setItem(
+                "multitwist_current_chat",
+                currentChatId
+            );
+        }
+
+        await refreshChatHistory();
+
+    } catch (error) {
+        removeTypingIndicator();
+
+        console.error("MultiTwist request error:", error);
+
+        addMessage(
+            "assistant",
+            "I couldn't complete that request. " +
+            (error.message || "Please try again.")
+        );
+
+    } finally {
+        isSending = false;
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = 'Send <span>↗</span>';
+
+        messageInput.focus();
+    }
 }
 
-.auth-card {
-    width: min(100%, 420px);
-    padding: 28px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: rgba(17,19,32,.97);
-    box-shadow: 0 20px 80px rgba(0,0,0,.35);
-}
+sendBtn.addEventListener("click", sendMessage);
 
-.auth-card h1 {
-    font-size: 25px;
-    margin: 18px 0 8px;
-}
+messageInput.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+});
 
-.auth-card p {
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
-    margin-bottom: 18px;
-}
+messageInput.addEventListener("input", () => {
+    messageInput.style.height = "48px";
 
-.auth-field {
-    width: 100%;
-    margin: 7px 0;
-    padding: 12px 13px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: white;
-    background: #0b0d18;
-    outline: none;
-}
+    messageInput.style.height =
+        Math.min(messageInput.scrollHeight, 180) + "px";
+});
 
-.auth-primary {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: 0;
-    border-radius: 10px;
-    color: white;
-    font-weight: 750;
-    background: linear-gradient(110deg,#8e69fa,#548bff);
-}
+/* FOUR WELCOME CARDS */
 
-.auth-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    justify-content: center;
-    margin-top: 16px;
-}
+document.querySelectorAll(".quick-card").forEach(button => {
+    button.addEventListener("click", () => {
+        messageInput.value = button.dataset.prompt || "";
+        messageInput.focus();
 
-.auth-links button {
-    color: #b6a3ff;
-    border: 0;
-    background: transparent;
-    font-size: 12px;
-}
+        messageInput.dispatchEvent(new Event("input"));
+    });
+});
 
-.auth-status {
-    min-height: 18px;
-    margin-top: 12px;
-    color: #ffb4b4;
-    font-size: 12px;
-    line-height: 1.5;
-}
+/* SIDEBAR NAVIGATION */
 
-.account-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+document.getElementById("uploadNav").addEventListener("click", () => {
+    closeMobileSidebar();
+    fileInput.click();
+});
 
-.account-email {
-    color: var(--muted);
-    font-size: 11px;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+document.getElementById("ideasNav").addEventListener("click", () => {
+    closeMobileSidebar();
 
-.auth-secondary {
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    padding: 8px 10px;
-    background: var(--panel2);
-    color: white;
-    font-size: 11px;
-}
+    messageInput.value =
+        "Help me brainstorm some creative project ideas.";
 
-</style>
-</head>
+    messageInput.focus();
+});
 
-<body>
-
-<!-- SUPABASE LOGIN / SIGNUP SCREEN -->
-
-<div class="auth-gate" id="authGate">
-    <section class="auth-card" aria-labelledby="authTitle">
-
-        <div class="brand">
-            <div class="logo">✦</div>
-            <div>
-                <div class="brand-name">MultiTwist AI</div>
-                <div class="brand-sub">Your AI workspace</div>
-            </div>
-        </div>
-
-        <h1 id="authTitle">Welcome back</h1>
-
-        <p id="authDescription">
-            Log in to access your private conversations.
-        </p>
-
-        <form id="authForm">
-            <input
-                class="auth-field"
-                id="authEmail"
-                type="email"
-                autocomplete="email"
-                placeholder="Email address"
-                required
-            >
-
-            <input
-                class="auth-field"
-                id="authPassword"
-                type="password"
-                autocomplete="current-password"
-                placeholder="Password (at least 8 characters)"
-                minlength="8"
-                required
-            >
-
-            <button class="auth-primary" id="authSubmit" type="submit">
-                Log in
-            </button>
-        </form>
-
-        <div
-            class="auth-status"
-            id="authStatus"
-            role="status"
-            aria-live="polite"
-        ></div>
-
-        <div class="auth-links">
-            <button type="button" id="authToggle">
-                Create an account
-            </button>
-
-            <button type="button" id="authForgot">
-                Forgot password?
-            </button>
-        </div>
-
-    </section>
-</div>
-
-<div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
-
-<!-- MAIN APPLICATION -->
-
-<div class="app">
-
-    <aside class="sidebar" id="sidebar">
-
-        <div class="brand">
-            <div class="logo">✦</div>
-            <div>
-                <div class="brand-name">MultiTwist AI</div>
-                <div class="brand-sub">Your AI workspace</div>
-            </div>
-        </div>
-
-        <button class="new-chat" id="newChatBtn" type="button">
-            ＋ &nbsp; New conversation
-        </button>
-
-        <div class="history-section">
-            <div class="section-label">CHAT HISTORY</div>
-            <div id="chatHistory" class="chat-history" aria-live="polite"></div>
-        </div>
-
-        <div>
-            <div class="section-label">WORKSPACE</div>
-
-            <button class="nav-item active" id="chatNav" type="button">
-                <span class="nav-icon">◈</span>
-                AI Assistant
-            </button>
-
-            <button class="nav-item" id="uploadNav" type="button">
-                <span class="nav-icon">▧</span>
-                File & worksheet help
-            </button>
-
-            <button class="nav-item" id="ideasNav" type="button">
-                <span class="nav-icon">✧</span>
-                Ideas & creativity
-            </button>
-        </div>
-
-        <div class="sidebar-bottom">
-            <div class="section-label">YOUR AI SPACE</div>
-
-            <div class="status-card">
-                <div class="status-title">✦ Made to explore</div>
-                <div class="status-text">
-                    Ask questions, explore ideas, and work through problems
-                    with MultiTwist AI.
-                </div>
-            </div>
-        </div>
-
-    </aside>
-
-    <main class="main">
-
-        <header class="topbar">
-
-            <div class="topbar-left">
-
-                <button
-                    type="button"
-                    id="mobileMenuBtn"
-                    class="mobile-menu-btn"
-                    aria-label="Open chat history"
-                    aria-expanded="false"
-                >☰</button>
-
-                <div>
-                    <div class="page-title">AI Assistant</div>
-                    <div class="page-subtitle">
-                        A little twist makes a big difference.
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="account-controls">
-                <span class="account-email" id="accountEmail"></span>
-
-                <button class="auth-secondary" id="logoutBtn" type="button">
-                    Log out
-                </button>
-
-                <div class="model-pill">
-                    <span class="model-dot"></span>
-                    MultiTwist assistant
-                </div>
-            </div>
-
-        </header>
-
-        <section class="chat-area">
-
-            <div class="welcome" id="welcome">
-
-                <div class="welcome-icon">✦</div>
-
-                <h1>
-                    Hey there!<br>
-                    <span class="gradient-text">
-                        What are we exploring?
-                    </span>
-                </h1>
-
-                <p>
-                    Your space to ask questions, solve problems, understand
-                    worksheets, and turn random ideas into something awesome.
-                </p>
-
-                <div class="quick-actions">
-
-                    <button
-                        class="quick-card"
-                        data-prompt="Explain a difficult topic to me step by step, using simple examples."
-                    >
-                        <span class="emoji">🧠</span>
-                        <strong>Explain anything</strong>
-                        <small>Make difficult topics easier to understand.</small>
-                    </button>
-
-                    <button
-                        class="quick-card"
-                        data-prompt="Help me solve a worksheet step by step. Explain the reasoning behind each answer."
-                    >
-                        <span class="emoji">📚</span>
-                        <strong>Worksheet helper</strong>
-                        <small>Work through questions one at a time.</small>
-                    </button>
-
-                    <button
-                        class="quick-card"
-                        data-prompt="Give me five creative and useful project ideas, with a short explanation of each."
-                    >
-                        <span class="emoji">💡</span>
-                        <strong>Brainstorm ideas</strong>
-                        <small>Explore projects and creative possibilities.</small>
-                    </button>
-
-                    <button
-                        class="quick-card"
-                        data-prompt="Help me write, improve, and organize something. Ask me what I am working on if needed."
-                    >
-                        <span class="emoji">✍️</span>
-                        <strong>Writing studio</strong>
-                        <small>Organize your thoughts and polish your writing.</small>
-                    </button>
-
-                </div>
-            </div>
-
-            <div class="messages" id="messages"></div>
-
-        </section>
-
-        <!-- MESSAGE COMPOSER -->
-
-        <div class="composer-wrap">
-
-            <div class="toast" id="errorToast"></div>
-
-            <div class="composer">
-
-                <div class="file-info" id="fileInfo">
-                    <span>📎</span>
-                    <span class="file-name" id="fileName"></span>
-
-                    <button
-                        class="remove-file"
-                        id="removeFileBtn"
-                        type="button"
-                        aria-label="Remove file"
-                    >×</button>
-                </div>
-
-                <textarea
-                    id="messageInput"
-                    placeholder="Message MultiTwist AI..."
-                    rows="1"
-                    aria-label="Your message"
-                ></textarea>
-
-                <div class="composer-bottom">
-
-                    <div class="composer-tools">
-
-                        <button class="tool-btn" id="attachBtn" type="button">
-                            ＋ Attach file
-                        </button>
-
-                        <input
-                            id="fileInput"
-                            type="file"
-                            accept="image/*,.pdf,.doc,.docx,.txt"
-                            hidden
-                        >
-
-                        <span style="font-size:10px;color:#737993;">
-                            Enter to send · Shift+Enter for new line
-                        </span>
-
-                    </div>
-
-                    <button class="send-btn" id="sendBtn" type="button">
-                        Send <span>↗</span>
-                    </button>
-
-                </div>
-            </div>
-
-            <div class="disclaimer">
-                MultiTwist AI can make mistakes. Double-check important information.
-            </div>
-
-        </div>
-
-    </main>
-</div>
-
-<!-- JAVASCRIPT LIBRARIES -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
-
-<script>
-const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
-const messages = document.getElementById("messages");
-const welcome = document.getElementById("welcome");
-const fileInput = document.getElementById("fileInput");
-const fileInfo = document.getElementById("fileInfo");
-const fileName = document.getElementById("fileName");
-const errorToast = document.getElementById("errorToast");
-
-const sidebar = document.getElementById("sidebar");
-const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-const mobileBackdrop = document.getElementById("mobileSidebarBackdrop");
-
-let selectedFile = null;
-let isSending = false;
+document.getElementById("chatNav").addEventListener("click", () => {
+    closeMobileSidebar();
+    messageInput.focus();
+});
 
 /*
- * Supabase configuration.
- * Replace these placeholders with your project's actual values.
+ * IMPORTANT:
+ * Do not reopen the previous conversation automatically on page load.
+ * The welcome screen appears every time the page is reopened.
+ * Previously saved conversations remain accessible from CHAT HISTORY.
  */
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+// Supabase authentication UI and session lifecycle.
+const authGate = document.getElementById("authGate");
+const authForm = document.getElementById("authForm");
+const authEmail = document.getElementById("authEmail");
+const authPassword = document.getElementById("authPassword");
+const authTitle = document.getElementById("authTitle");
+const authDescription = document.getElementById("authDescription");
+const authSubmit = document.getElementById("authSubmit");
+const authStatus = document.getElementById("authStatus");
+const authToggle = document.getElementById("authToggle");
+const authForgot = document.getElementById("authForgot");
+const logoutBtn = document.getElementById("logoutBtn");
+const accountEmail = document.getElementById("accountEmail");
+const signInBtn = document.getElementById("signInBtn");
+const authClose = document.getElementById("authClose");
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
+function openAuthModal(mode = "login") {
+    setAuthMode(mode);
+    authGate.style.display = "grid";
+    authStatus.textContent = "";
+    authEmail.focus();
+}
 
-let currentSession = null;
-let authMode = "login";
-let currentChatId = crypto.randomUUID();
-let chatList = [];
+function closeAuthModal() {
+    if (authMode !== "reset") authGate.style.display = "none";
+}
 
-localStorage.setItem("multitwist_current_chat", currentChatId);
+signInBtn.addEventListener("click", () => {
+    openAuthModal("login");
+    if (!SUPABASE_CONFIGURED) {
+        authStatus.style.color = "#ffb4b4";
+        authStatus.textContent = "Supabase is not configured yet. Add your Project URL and publishable key in this HTML first.";
+    }
+});
+authClose.addEventListener("click", closeAuthModal);
+authGate.addEventListener("click", event => {
+    if (event.target === authGate) closeAuthModal();
+});
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeAuthModal();
+});
+
+function setAuthMode(mode) {
+    authMode = mode;
+    authStatus.textContent = "";
+    const reset = mode === "reset";
+    authTitle.textContent = reset ? "Choose a new password" : (mode === "signup" ? "Create your account" : "Welcome back");
+    authDescription.textContent = reset ? "Enter a new password for your account." : (mode === "signup" ? "Sign up to keep your conversations private across devices." : "Log in to access your private conversations.");
+    authSubmit.textContent = reset ? "Update password" : (mode === "signup" ? "Create account" : "Log in");
+    authPassword.placeholder = reset ? "New password (at least 8 characters)" : "Password (at least 8 characters)";
+    authPassword.autocomplete = reset ? "new-password" : (mode === "signup" ? "new-password" : "current-password");
+    authPassword.required = true;
+    authToggle.style.display = reset ? "none" : "";
+    authForgot.style.display = (mode === "signup" || reset) ? "none" : "";
+    authToggle.textContent = mode === "signup" ? "Already have an account? Log in" : "Create an account";
+}
+
+authToggle.addEventListener("click", () => setAuthMode(authMode === "signup" ? "login" : "signup"));
+authForgot.addEventListener("click", async () => {
+    const email = authEmail.value.trim();
+    if (!email) { authStatus.textContent = "Enter your email address first."; return; }
+    authStatus.style.color = "#a9f0d0";
+    authStatus.textContent = "Sending password-reset email…";
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+    authStatus.style.color = error ? "#ffb4b4" : "#a9f0d0";
+    authStatus.textContent = error ? error.message : "If that account exists, a password-reset email has been sent.";
+});
+
+authForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    authSubmit.disabled = true;
+    authStatus.style.color = "#a9f0d0";
+    authStatus.textContent = "Please wait…";
+    const email = authEmail.value.trim();
+    const password = authPassword.value;
+    let result;
+    try {
+        if (!SUPABASE_CONFIGURED) {
+            throw new Error("Supabase is not configured yet. Add your Project URL and publishable key in this HTML first.");
+        }
+        if (authMode === "signup") {
+            result = await supabaseClient.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+            if (!result.error && !result.data.session) {
+                authStatus.textContent = "Account created. Check your email to verify it, then log in.";
+                authStatus.style.color = "#a9f0d0";
+                return;
+            }
+        } else if (authMode === "reset") {
+            result = await supabaseClient.auth.updateUser({ password });
+        } else {
+            result = await supabaseClient.auth.signInWithPassword({ email, password });
+        }
+        if (result.error) throw result.error;
+        if (result.data.session || authMode === "reset") {
+            authStatus.textContent = authMode === "reset" ? "Password updated. Please log in with your new password." : "Signed in successfully.";
+            if (authMode === "reset") { await supabaseClient.auth.signOut(); setAuthMode("login"); }
+        }
+    } catch (error) {
+        authStatus.style.color = "#ffb4b4";
+        authStatus.textContent = error.message || "Authentication failed. Please try again.";
+    } finally {
+        authSubmit.disabled = false;
+    }
+});
+
+logoutBtn.addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+});
+
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    currentSession = session;
+    if (event === "PASSWORD_RECOVERY") {
+        setAuthMode("reset");
+        authGate.style.display = "grid";
+        return;
+    }
+
+    if (session) {
+        authGate.style.display = "none";
+        accountEmail.textContent = session.user.email || "Signed in";
+        logoutBtn.style.display = "inline-block";
+        signInBtn.style.display = "none";
+        authStatus.textContent = "";
+        if (SUPABASE_CONFIGURED) refreshChatHistory();
+    } else {
+        // Public visitors can use the AI without an account; saved history
+        // and account-specific history controls remain sign-in features.
+        authGate.style.display = "none";
+        accountEmail.textContent = "";
+        logoutBtn.style.display = "none";
+        signInBtn.style.display = "block";
+        chatList = [];
+        document.getElementById("chatHistory").innerHTML =
+            '<div class="history-empty">Sign in to save and revisit chats.</div>';
+    }
+});
+
+// Do not call chat APIs until a verified Supabase session is available.
+</script>
+
+</body>
+</html>
