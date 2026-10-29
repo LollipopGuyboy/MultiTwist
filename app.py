@@ -420,9 +420,9 @@ def extract_uploaded_file(uploaded_file):
             if not image_bytes:
                 return "", None
 
-            # Basic upload size limit: 8 MB.
-            if len(image_bytes) > 8 * 1024 * 1024:
-                return "", "Image exceeds the 8 MB upload limit."
+        # Basic upload size limit: 1000 MB.
+if len(image_bytes) > 1000 * 1024 * 1024:
+    return "", "Image exceeds the 1000 MB upload limit."
 
             encoded_image = base64.b64encode(
                 image_bytes
