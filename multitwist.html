@@ -53,11 +53,12 @@ button {
 
 .sidebar {
     border-right: 1px solid var(--border);
-    background: rgba(11,12,22,.82);
+    background: rgba(11,12,22,.96);
     padding: 24px 17px;
     display: flex;
     flex-direction: column;
     gap: 27px;
+    min-height: 100vh;
 }
 
 .brand {
@@ -162,27 +163,74 @@ button {
     line-height: 1.6;
 }
 
-.status-dot {
-    display: inline-block;
-    height: 7px;
-    width: 7px;
-    background: var(--green);
-    border-radius: 50%;
-    margin-right: 6px;
-    box-shadow: 0 0 10px rgba(87,230,177,.6);
+/* CHAT HISTORY */
+
+.history-section {
+    min-height: 100px;
 }
 
+.chat-history {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 42vh;
+    overflow-y: auto;
+}
 
-.history-section { min-height: 100px; }
-.chat-history { display: flex; flex-direction: column; gap: 5px; max-height: 42vh; overflow-y: auto; }
-.history-item { display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 9px; background: transparent; border: 1px solid transparent; }
-.history-item.active { background: var(--panel2); border-color: rgba(152,116,255,.22); }
-.history-open { min-width: 0; flex: 1; padding: 7px 5px; color: #c8cce0; background: transparent; border: 0; text-align: left; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.history-open:hover { color: white; }
-.history-action { flex: 0 0 auto; border: 0; border-radius: 6px; background: transparent; color: #9298b2; padding: 5px; font-size: 12px; }
-.history-action:hover { color: white; background: rgba(255,255,255,.08); }
-.history-empty { color: #777d98; font-size: 11px; padding: 4px 8px; line-height: 1.5; }
-@media (max-width: 760px) { .history-section { display: none; } }
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    border-radius: 9px;
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.history-item.active {
+    background: var(--panel2);
+    border-color: rgba(152,116,255,.22);
+}
+
+.history-open {
+    min-width: 0;
+    flex: 1;
+    padding: 7px 5px;
+    color: #c8cce0;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-open:hover {
+    color: white;
+}
+
+.history-action {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #9298b2;
+    padding: 5px;
+    font-size: 13px;
+}
+
+.history-action:hover {
+    color: white;
+    background: rgba(255,255,255,.08);
+}
+
+.history-empty {
+    color: #777d98;
+    font-size: 11px;
+    padding: 4px 8px;
+    line-height: 1.5;
+}
 
 /* MAIN AREA */
 
@@ -194,15 +242,22 @@ button {
 }
 
 .topbar {
-    height: 76px;
-    padding: 0 34px;
+    min-height: 76px;
+    padding: 12px 34px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 15px;
-    background: rgba(10,11,20,.35);
+    background: rgba(10,11,20,.55);
     backdrop-filter: blur(12px);
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
 }
 
 .page-title {
@@ -226,6 +281,7 @@ button {
     padding: 9px 13px;
     color: #d9d9f0;
     font-size: 11px;
+    white-space: nowrap;
 }
 
 .model-dot {
@@ -235,7 +291,17 @@ button {
     background: var(--green);
 }
 
-/* CHAT */
+.mobile-menu-btn {
+    display: none;
+    border: 1px solid var(--border);
+    background: var(--panel2);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 11px;
+    font-size: 20px;
+}
+
+/* CHAT AREA */
 
 .chat-area {
     width: 100%;
@@ -386,7 +452,6 @@ button {
     background: linear-gradient(135deg, rgba(116,81,224,.24), rgba(57,102,206,.19));
 }
 
-/* Markdown formatting for assistant answers */
 .message.assistant .bubble {
     white-space: normal;
 }
@@ -406,7 +471,6 @@ button {
     margin: 20px 0 10px;
     line-height: 1.35;
     font-weight: 800;
-    letter-spacing: -.25px;
 }
 
 .message-content h1 { font-size: 1.45em; }
@@ -414,7 +478,7 @@ button {
 .message-content h3 { font-size: 1.12em; }
 
 .message-content strong {
-    color: #ffffff;
+    color: white;
     font-weight: 800;
 }
 
@@ -430,18 +494,12 @@ button {
 
 .message-content li {
     margin: 5px 0;
-    padding-left: 2px;
 }
 
 .message-content a {
     color: #b6a3ff;
     text-decoration: underline;
-    text-underline-offset: 3px;
     overflow-wrap: anywhere;
-}
-
-.message-content a:hover {
-    color: #d2c7ff;
 }
 
 .message-content blockquote {
@@ -450,7 +508,6 @@ button {
     border-left: 3px solid var(--purple);
     color: #d3d5e8;
     background: rgba(152,116,255,.07);
-    border-radius: 0 8px 8px 0;
 }
 
 .message-content pre {
@@ -474,7 +531,6 @@ button {
 .message-content pre code {
     padding: 0;
     background: transparent;
-    border-radius: 0;
 }
 
 .message-content hr {
@@ -525,13 +581,8 @@ button {
     animation: bounce 1s infinite ease-in-out;
 }
 
-.typing span:nth-child(2) {
-    animation-delay: .15s;
-}
-
-.typing span:nth-child(3) {
-    animation-delay: .3s;
-}
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
 
 @keyframes bounce {
     0%, 60%, 100% { transform: translateY(0); opacity: .45; }
@@ -596,6 +647,7 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
 }
 
 .tool-btn {
@@ -605,7 +657,6 @@ button {
     padding: 8px 10px;
     border-radius: 10px;
     font-size: 11px;
-    transition: .2s;
 }
 
 .tool-btn:hover {
@@ -626,18 +677,11 @@ button {
     font-weight: 750;
     background: linear-gradient(110deg, #8e69fa, #548bff);
     box-shadow: 0 4px 18px rgba(110,105,255,.2);
-    transition: .2s;
-}
-
-.send-btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.1);
 }
 
 .send-btn:disabled {
     opacity: .55;
     cursor: not-allowed;
-    transform: none;
 }
 
 .file-info {
@@ -693,20 +737,76 @@ button {
     display: block;
 }
 
-/* MOBILE */
+/* MOBILE SIDEBAR */
+
+.mobile-sidebar-backdrop {
+    display: none;
+}
 
 @media (max-width: 760px) {
     .app {
-        grid-template-columns: 1fr;
+        display: block;
     }
 
     .sidebar {
-        display: none;
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(85vw, 320px);
+        min-height: 100vh;
+        overflow-y: auto;
+        z-index: 1001;
+        transform: translateX(-105%);
+        transition: transform .25s ease;
+        box-shadow: none;
+        background: #0b0c16;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 10px 0 35px rgba(0,0,0,.4);
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        flex-shrink: 0;
+    }
+
+    .mobile-sidebar-backdrop.show {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(0,0,0,.65);
+    }
+
+    .history-section {
+        display: block;
+    }
+
+    .chat-history {
+        max-height: 42vh;
     }
 
     .topbar {
-        height: 65px;
-        padding: 0 17px;
+        min-height: 65px;
+        padding: 10px 14px;
+        gap: 8px;
+    }
+
+    .page-title {
+        font-size: 14px;
+    }
+
+    .page-subtitle {
+        font-size: 10px;
+    }
+
+    .model-pill {
+        font-size: 10px;
+        padding: 8px;
     }
 
     .chat-area {
@@ -737,10 +837,17 @@ button {
     .bubble {
         max-width: 88%;
     }
+}
 
+@media (max-width: 430px) {
     .model-pill {
-        padding: 8px 10px;
-        font-size: 10px;
+        max-width: 125px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .composer-tools span {
+        display: none;
     }
 }
 
@@ -752,22 +859,18 @@ button {
     .quick-card {
         padding: 12px;
     }
-
-    .tool-btn {
-        padding: 8px;
-    }
-
-    .send-btn {
-        padding: 10px;
-    }
 }
 </style>
 </head>
 
 <body>
+
+<div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+
 <div class="app">
 
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+
         <div class="brand">
             <div class="logo">✦</div>
             <div>
@@ -776,7 +879,9 @@ button {
             </div>
         </div>
 
-        <button class="new-chat" id="newChatBtn">＋ &nbsp; New conversation</button>
+        <button class="new-chat" id="newChatBtn" type="button">
+            ＋ &nbsp; New conversation
+        </button>
 
         <div class="history-section">
             <div class="section-label">CHAT HISTORY</div>
@@ -786,15 +891,15 @@ button {
         <div>
             <div class="section-label">WORKSPACE</div>
 
-            <button class="nav-item active" id="chatNav">
+            <button class="nav-item active" id="chatNav" type="button">
                 <span class="nav-icon">◈</span> AI Assistant
             </button>
 
-            <button class="nav-item" id="uploadNav">
+            <button class="nav-item" id="uploadNav" type="button">
                 <span class="nav-icon">▧</span> File & worksheet help
             </button>
 
-            <button class="nav-item" id="ideasNav">
+            <button class="nav-item" id="ideasNav" type="button">
                 <span class="nav-icon">✧</span> Ideas & creativity
             </button>
         </div>
@@ -808,31 +913,52 @@ button {
                 </div>
             </div>
         </div>
+
     </aside>
 
     <main class="main">
+
         <header class="topbar">
-            <div>
-                <div class="page-title">AI Assistant</div>
-                <div class="page-subtitle">A little twist makes a big difference.</div>
+
+            <div class="topbar-left">
+                <button
+                    type="button"
+                    id="mobileMenuBtn"
+                    class="mobile-menu-btn"
+                    aria-label="Open chat history"
+                    aria-expanded="false"
+                >☰</button>
+
+                <div>
+                    <div class="page-title">AI Assistant</div>
+                    <div class="page-subtitle">A little twist makes a big difference.</div>
+                </div>
             </div>
 
             <div class="model-pill">
                 <span class="model-dot"></span>
                 MultiTwist assistant
             </div>
+
         </header>
 
         <section class="chat-area">
+
             <div class="welcome" id="welcome">
                 <div class="welcome-icon">✦</div>
-                <h1>Hey there!<br><span class="gradient-text">What are we exploring?</span></h1>
+
+                <h1>
+                    Hey there!<br>
+                    <span class="gradient-text">What are we exploring?</span>
+                </h1>
+
                 <p>
                     Your space to ask questions, solve problems, understand worksheets,
                     and turn random ideas into something awesome.
                 </p>
 
                 <div class="quick-actions">
+
                     <button class="quick-card" data-prompt="Explain a difficult topic to me step by step, using simple examples.">
                         <span class="emoji">🧠</span>
                         <strong>Explain anything</strong>
@@ -856,20 +982,24 @@ button {
                         <strong>Writing studio</strong>
                         <small>Organize your thoughts and polish your writing.</small>
                     </button>
+
                 </div>
             </div>
 
             <div class="messages" id="messages"></div>
+
         </section>
 
         <div class="composer-wrap">
+
             <div class="toast" id="errorToast"></div>
 
             <div class="composer">
+
                 <div class="file-info" id="fileInfo">
                     <span>📎</span>
                     <span class="file-name" id="fileName"></span>
-                    <button class="remove-file" id="removeFileBtn" aria-label="Remove file">×</button>
+                    <button class="remove-file" id="removeFileBtn" type="button" aria-label="Remove file">×</button>
                 </div>
 
                 <textarea
@@ -880,32 +1010,43 @@ button {
                 ></textarea>
 
                 <div class="composer-bottom">
+
                     <div class="composer-tools">
-                        <button class="tool-btn" id="attachBtn" type="button">＋ Attach file</button>
+                        <button class="tool-btn" id="attachBtn" type="button">
+                            ＋ Attach file
+                        </button>
+
                         <input
                             id="fileInput"
                             type="file"
                             accept="image/*,.pdf,.doc,.docx,.txt"
                             hidden
                         >
-                        <span style="font-size:10px;color:#737993;">Enter to send · Shift+Enter for new line</span>
+
+                        <span style="font-size:10px;color:#737993;">
+                            Enter to send · Shift+Enter for new line
+                        </span>
                     </div>
 
                     <button class="send-btn" id="sendBtn" type="button">
                         Send <span>↗</span>
                     </button>
+
                 </div>
             </div>
 
             <div class="disclaimer">
                 MultiTwist AI can make mistakes. Double-check important information.
             </div>
+
         </div>
+
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
 <script>
 const messageInput = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
@@ -916,99 +1057,258 @@ const fileInfo = document.getElementById("fileInfo");
 const fileName = document.getElementById("fileName");
 const errorToast = document.getElementById("errorToast");
 
+const sidebar = document.getElementById("sidebar");
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+const mobileBackdrop = document.getElementById("mobileSidebarBackdrop");
+
 let selectedFile = null;
 let isSending = false;
-let currentChatId = localStorage.getItem("multitwist_current_chat") || crypto.randomUUID();
+
+/*
+ * Always create a fresh conversation ID when the page loads.
+ * Older conversations remain saved in the Flask database and history list.
+ */
+let currentChatId = crypto.randomUUID();
 let chatList = [];
+
 localStorage.setItem("multitwist_current_chat", currentChatId);
+
+/* MOBILE MENU */
+
+function openMobileSidebar() {
+    sidebar.classList.add("mobile-open");
+    mobileBackdrop.classList.add("show");
+    mobileMenuBtn.setAttribute("aria-expanded", "true");
+}
+
+function closeMobileSidebar() {
+    sidebar.classList.remove("mobile-open");
+    mobileBackdrop.classList.remove("show");
+    mobileMenuBtn.setAttribute("aria-expanded", "false");
+}
+
+mobileMenuBtn.addEventListener("click", () => {
+    if (sidebar.classList.contains("mobile-open")) {
+        closeMobileSidebar();
+    } else {
+        openMobileSidebar();
+    }
+});
+
+mobileBackdrop.addEventListener("click", closeMobileSidebar);
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeMobileSidebar();
+    }
+});
+
+/* CHAT HISTORY */
 
 async function refreshChatHistory() {
     const container = document.getElementById("chatHistory");
+
     try {
         const response = await fetch("/api/chats");
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Could not load chats");
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not load chats");
+        }
+
         chatList = data.chats || [];
         container.innerHTML = "";
+
         if (!chatList.length) {
-            container.innerHTML = '<div class="history-empty">Your conversations will appear here.</div>';
+            container.innerHTML =
+                '<div class="history-empty">Your conversations will appear here.</div>';
             return;
         }
+
         chatList.forEach(chat => {
             const row = document.createElement("div");
-            row.className = "history-item" + (chat.id === currentChatId ? " active" : "");
+
+            row.className =
+                "history-item" +
+                (chat.id === currentChatId ? " active" : "");
+
             const open = document.createElement("button");
             open.className = "history-open";
             open.type = "button";
             open.textContent = chat.title || "New conversation";
             open.title = chat.title || "New conversation";
-            open.addEventListener("click", () => openChat(chat.id));
+
+            open.addEventListener("click", async () => {
+                await openChat(chat.id);
+                closeMobileSidebar();
+            });
+
             const rename = document.createElement("button");
-            rename.className = "history-action"; rename.type = "button"; rename.textContent = "✎"; rename.title = "Rename chat";
-            rename.addEventListener("click", () => renameChat(chat.id, chat.title));
+            rename.className = "history-action";
+            rename.type = "button";
+            rename.textContent = "✎";
+            rename.title = "Rename chat";
+            rename.setAttribute("aria-label", "Rename chat");
+
+            rename.addEventListener("click", async event => {
+                event.stopPropagation();
+                await renameChat(chat.id, chat.title);
+            });
+
             const del = document.createElement("button");
-            del.className = "history-action"; del.type = "button"; del.textContent = "×"; del.title = "Delete chat";
-            del.addEventListener("click", () => deleteChat(chat.id, chat.title));
-            row.append(open, rename, del); container.appendChild(row);
+            del.className = "history-action";
+            del.type = "button";
+            del.textContent = "×";
+            del.title = "Delete chat";
+            del.setAttribute("aria-label", "Delete chat");
+
+            del.addEventListener("click", async event => {
+                event.stopPropagation();
+                await deleteChat(chat.id, chat.title);
+            });
+
+            row.append(open, rename, del);
+            container.appendChild(row);
         });
+
     } catch (error) {
         console.error("Chat history error:", error);
-        container.innerHTML = '<div class="history-empty">History is temporarily unavailable.</div>';
+
+        container.innerHTML =
+            '<div class="history-empty">History is temporarily unavailable.</div>';
     }
 }
 
 async function openChat(chatId) {
     if (isSending) return;
+
     try {
-        const response = await fetch(`/api/chats/${encodeURIComponent(chatId)}`);
+        const response = await fetch(
+            `/api/chats/${encodeURIComponent(chatId)}`
+        );
+
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Could not open chat");
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not open chat");
+        }
+
         currentChatId = chatId;
         localStorage.setItem("multitwist_current_chat", currentChatId);
+
         messages.innerHTML = "";
-        (data.messages || []).forEach(item => addMessage(item.role, item.content));
-        welcome.style.display = (data.messages || []).length ? "none" : "";
+
+        const chatMessages = data.messages || [];
+
+        chatMessages.forEach(item => {
+            addMessage(item.role, item.content);
+        });
+
+        welcome.style.display = chatMessages.length ? "none" : "";
+
         clearError();
         await refreshChatHistory();
-    } catch (error) { showError(error.message || "Could not open this chat."); }
+
+    } catch (error) {
+        showError(error.message || "Could not open this chat.");
+    }
 }
 
 async function renameChat(chatId, oldTitle) {
-    const title = prompt("Rename this conversation:", oldTitle || "");
+    const title = prompt(
+        "Rename this conversation:",
+        oldTitle || ""
+    );
+
     if (title === null) return;
+
     try {
-        const response = await fetch(`/api/chats/${encodeURIComponent(chatId)}`, {
-            method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({title})
-        });
+        const response = await fetch(
+            `/api/chats/${encodeURIComponent(chatId)}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ title })
+            }
+        );
+
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Could not rename chat");
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not rename chat");
+        }
+
         await refreshChatHistory();
-    } catch (error) { showError(error.message || "Could not rename this chat."); }
+
+    } catch (error) {
+        showError(error.message || "Could not rename this chat.");
+    }
 }
 
 async function deleteChat(chatId, title) {
-    if (!confirm(`Delete "${title || "this conversation"}"? This cannot be undone.`)) return;
+    const confirmed = confirm(
+        `Delete "${title || "this conversation"}"? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
     try {
-        const response = await fetch(`/api/chats/${encodeURIComponent(chatId)}`, {method: "DELETE"});
+        const response = await fetch(
+            `/api/chats/${encodeURIComponent(chatId)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Could not delete chat");
-        if (chatId === currentChatId) startNewChat(false);
+
+        if (!response.ok) {
+            throw new Error(data.error || "Could not delete chat");
+        }
+
+        if (chatId === currentChatId) {
+            startNewChat(false);
+        }
+
         await refreshChatHistory();
-    } catch (error) { showError(error.message || "Could not delete this chat."); }
+
+    } catch (error) {
+        showError(error.message || "Could not delete this chat.");
+    }
 }
 
+/* NEW CHAT */
+
 function startNewChat(refresh = true) {
+    if (isSending) return;
+
     currentChatId = crypto.randomUUID();
+
     localStorage.setItem("multitwist_current_chat", currentChatId);
+
     messages.innerHTML = "";
     welcome.style.display = "";
     messageInput.value = "";
     messageInput.style.height = "48px";
+
     setSelectedFile(null);
     clearError();
-    if (refresh) refreshChatHistory();
+    closeMobileSidebar();
+
+    if (refresh) {
+        refreshChatHistory();
+    }
+
     messageInput.focus();
 }
+
+document.getElementById("newChatBtn").addEventListener("click", () => {
+    startNewChat();
+});
+
+/* ERRORS */
 
 function showError(message) {
     errorToast.textContent = message;
@@ -1019,6 +1319,8 @@ function clearError() {
     errorToast.textContent = "";
     errorToast.classList.remove("show");
 }
+
+/* FILE ATTACHMENTS */
 
 function setSelectedFile(file) {
     selectedFile = file || null;
@@ -1042,17 +1344,23 @@ fileInput.addEventListener("change", () => {
 
     if (!file) return;
 
-    const allowedExtensions = /\.(png|jpe?g|gif|webp|pdf|doc|docx|txt)$/i;
+    const allowedExtensions =
+        /\.(png|jpe?g|gif|webp|pdf|doc|docx|txt)$/i;
 
     if (!allowedExtensions.test(file.name)) {
-        showError("That file type isn't supported. Try an image, PDF, DOC, DOCX, or TXT file.");
+        showError(
+            "That file type isn't supported. Try an image, PDF, DOC, DOCX, or TXT file."
+        );
+
         setSelectedFile(null);
         return;
     }
 
-    // Avoid accidentally selecting very large files.
     if (file.size > 10 * 1024 * 1024) {
-        showError("This file is larger than 10 MB. Please choose a smaller file.");
+        showError(
+            "This file is larger than 10 MB. Please choose a smaller file."
+        );
+
         setSelectedFile(null);
         return;
     }
@@ -1064,6 +1372,8 @@ fileInput.addEventListener("change", () => {
 document.getElementById("removeFileBtn").addEventListener("click", () => {
     setSelectedFile(null);
 });
+
+/* MESSAGES */
 
 function scrollToBottom() {
     window.scrollTo({
@@ -1083,20 +1393,21 @@ function addMessage(role, text, imageUrl = null) {
     const bubble = document.createElement("div");
     bubble.className = "bubble";
 
-    // User messages stay plain text. Assistant replies render Markdown safely.
     if (role === "assistant" && window.marked && window.DOMPurify) {
         bubble.classList.add("message-content");
+
         const renderedMarkdown = marked.parse(text, {
             breaks: true,
             gfm: true
         });
+
         bubble.innerHTML = DOMPurify.sanitize(renderedMarkdown, {
             USE_PROFILES: { html: true }
         });
 
-        // Open external links in a new tab safely.
         bubble.querySelectorAll("a[href]").forEach(link => {
             const url = new URL(link.href, window.location.href);
+
             if (url.protocol === "http:" || url.protocol === "https:") {
                 link.target = "_blank";
                 link.rel = "noopener noreferrer";
@@ -1104,8 +1415,8 @@ function addMessage(role, text, imageUrl = null) {
                 link.removeAttribute("href");
             }
         });
+
     } else {
-        // Safe fallback if the Markdown libraries fail to load.
         bubble.textContent = text;
     }
 
@@ -1121,6 +1432,7 @@ function addMessage(role, text, imageUrl = null) {
     messages.appendChild(row);
 
     scrollToBottom();
+
     return row;
 }
 
@@ -1153,8 +1465,13 @@ function addTypingIndicator() {
 
 function removeTypingIndicator() {
     const indicator = document.getElementById("typingIndicator");
-    if (indicator) indicator.remove();
+
+    if (indicator) {
+        indicator.remove();
+    }
 }
+
+/* SEND MESSAGE */
 
 async function sendMessage() {
     if (isSending) return;
@@ -1170,17 +1487,25 @@ async function sendMessage() {
     welcome.style.display = "none";
 
     const fileToSend = selectedFile;
-    const imagePreviewUrl = fileToSend && fileToSend.type.startsWith("image/")
-        ? URL.createObjectURL(fileToSend)
-        : null;
+
+    const imagePreviewUrl =
+        fileToSend && fileToSend.type.startsWith("image/")
+            ? URL.createObjectURL(fileToSend)
+            : null;
 
     let displayText = message;
 
     if (fileToSend) {
-        displayText = (message ? message + "\n\n" : "") + "📎 " + fileToSend.name;
+        displayText =
+            (message ? message + "\n\n" : "") +
+            "📎 " + fileToSend.name;
     }
 
-    addMessage("user", displayText || "Please help me with this file.", imagePreviewUrl);
+    addMessage(
+        "user",
+        displayText || "Please help me with this file.",
+        imagePreviewUrl
+    );
 
     messageInput.value = "";
     messageInput.style.height = "48px";
@@ -1188,20 +1513,19 @@ async function sendMessage() {
     isSending = true;
     sendBtn.disabled = true;
     sendBtn.innerHTML = 'Thinking <span>✦</span>';
+
     addTypingIndicator();
 
     const formData = new FormData();
 
-    // IMPORTANT: these names must match your Flask backend.
+    // These field names must match your Flask backend.
     formData.append("message", message);
     formData.append("session_id", currentChatId);
 
     if (fileToSend) {
-        // Your existing backend expects the upload field named "image".
         formData.append("image", fileToSend);
     }
 
-    // Clear the selected file from the composer while this request runs.
     setSelectedFile(null);
 
     try {
@@ -1215,13 +1539,19 @@ async function sendMessage() {
         try {
             data = await response.json();
         } catch {
-            throw new Error("The server returned an unexpected response. Check your Flask logs.");
+            throw new Error(
+                "The server returned an unexpected response. Check your Flask logs."
+            );
         }
 
         removeTypingIndicator();
 
         if (!response.ok) {
-            throw new Error(data.error || data.reply || `Server error (${response.status}).`);
+            throw new Error(
+                data.error ||
+                data.reply ||
+                `Server error (${response.status}).`
+            );
         }
 
         if (data.error) {
@@ -1231,14 +1561,22 @@ async function sendMessage() {
         const reply = data.reply || data.response || data.message;
 
         if (typeof reply !== "string" || !reply.trim()) {
-            throw new Error("The server returned no answer. Check your backend's JSON response.");
+            throw new Error(
+                "The server returned no answer. Check your backend's JSON response."
+            );
         }
 
         addMessage("assistant", reply);
+
         if (data.session_id) {
             currentChatId = data.session_id;
-            localStorage.setItem("multitwist_current_chat", currentChatId);
+
+            localStorage.setItem(
+                "multitwist_current_chat",
+                currentChatId
+            );
         }
+
         await refreshChatHistory();
 
     } catch (error) {
@@ -1253,22 +1591,17 @@ async function sendMessage() {
         );
 
     } finally {
-        if (imagePreviewUrl) {
-            // The preview is already displayed in the chat.
-            // Revoking the URL after display can break the image in some browsers,
-            // so leave it available for this page session.
-        }
-
         isSending = false;
         sendBtn.disabled = false;
         sendBtn.innerHTML = 'Send <span>↗</span>';
+
         messageInput.focus();
     }
 }
 
 sendBtn.addEventListener("click", sendMessage);
 
-messageInput.addEventListener("keydown", (event) => {
+messageInput.addEventListener("keydown", event => {
     if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         sendMessage();
@@ -1277,35 +1610,51 @@ messageInput.addEventListener("keydown", (event) => {
 
 messageInput.addEventListener("input", () => {
     messageInput.style.height = "48px";
-    messageInput.style.height = Math.min(messageInput.scrollHeight, 180) + "px";
+
+    messageInput.style.height =
+        Math.min(messageInput.scrollHeight, 180) + "px";
 });
+
+/* FOUR WELCOME CARDS */
 
 document.querySelectorAll(".quick-card").forEach(button => {
     button.addEventListener("click", () => {
         messageInput.value = button.dataset.prompt || "";
         messageInput.focus();
+
         messageInput.dispatchEvent(new Event("input"));
     });
 });
 
-document.getElementById("newChatBtn").addEventListener("click", () => startNewChat());
-refreshChatHistory().then(() => {
-    if (chatList.some(chat => chat.id === currentChatId)) openChat(currentChatId);
-    else startNewChat(false);
-});
+/* SIDEBAR NAVIGATION */
 
 document.getElementById("uploadNav").addEventListener("click", () => {
+    closeMobileSidebar();
     fileInput.click();
 });
 
 document.getElementById("ideasNav").addEventListener("click", () => {
-    messageInput.value = "Help me brainstorm some creative project ideas.";
+    closeMobileSidebar();
+
+    messageInput.value =
+        "Help me brainstorm some creative project ideas.";
+
     messageInput.focus();
 });
 
 document.getElementById("chatNav").addEventListener("click", () => {
+    closeMobileSidebar();
     messageInput.focus();
 });
+
+/*
+ * IMPORTANT:
+ * Do not reopen the previous conversation automatically on page load.
+ * The welcome screen appears every time the page is reopened.
+ * Previously saved conversations remain accessible from CHAT HISTORY.
+ */
+refreshChatHistory();
 </script>
+
 </body>
 </html>
