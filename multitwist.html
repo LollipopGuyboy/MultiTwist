@@ -863,44 +863,10 @@ button {
         padding: 12px;
     }
 }
-
-/* AUTH MODAL (the website remains usable without logging in) */
-.auth-gate { position: fixed; inset: 0; z-index: 3000; display: none; place-items: center; padding: 20px; background: #090a12; background-image: radial-gradient(ellipse at 10% 0%, rgba(112,70,255,.20), transparent 40%), radial-gradient(ellipse at 90% 100%, rgba(49,126,255,.16), transparent 40%); }
-.auth-card { width: min(100%, 420px); padding: 28px; border: 1px solid var(--border); border-radius: 20px; background: rgba(17,19,32,.97); box-shadow: 0 20px 80px rgba(0,0,0,.35); }
-.auth-card h1 { font-size: 25px; margin: 18px 0 8px; }
-.auth-card p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
-.auth-field { width: 100%; margin: 7px 0; padding: 12px 13px; border: 1px solid var(--border); border-radius: 10px; color: white; background: #0b0d18; outline: none; }
-.auth-primary { width: 100%; padding: 12px; margin-top: 10px; border: 0; border-radius: 10px; color: white; font-weight: 750; background: linear-gradient(110deg,#8e69fa,#548bff); }
-.auth-links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 16px; }
-.auth-links button { color: #b6a3ff; border: 0; background: transparent; font-size: 12px; }
-.auth-status { min-height: 18px; margin-top: 12px; color: #ffb4b4; font-size: 12px; line-height: 1.5; }
-.account-controls { display:flex; align-items:center; gap:8px; }
-.account-email { color: var(--muted); font-size:11px; max-width:180px; overflow:hidden; text-overflow:ellipsis; }
-.auth-secondary { border:1px solid var(--border); border-radius:9px; padding:8px 10px; background:var(--panel2); color:white; font-size:11px; }
-
 </style>
 </head>
 
 <body>
-
-
-<div class="auth-gate" id="authGate">
-  <section class="auth-card" aria-labelledby="authTitle" style="position:relative;"><button type="button" id="authClose" aria-label="Close sign in" style="position:absolute;right:14px;top:12px;border:0;background:transparent;color:#a1a5bc;font-size:24px;cursor:pointer;">×</button>
-    <div class="brand"><div class="logo">✦</div><div><div class="brand-name">MultiTwist AI</div><div class="brand-sub">Your AI workspace</div></div></div>
-    <h1 id="authTitle">Welcome back</h1>
-    <p id="authDescription">Log in to access your private conversations.</p>
-    <form id="authForm">
-      <input class="auth-field" id="authEmail" type="email" autocomplete="email" placeholder="Email address" required>
-      <input class="auth-field" id="authPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)" minlength="8" required>
-      <button class="auth-primary" id="authSubmit" type="submit">Log in</button>
-    </form>
-    <div class="auth-status" id="authStatus" role="status" aria-live="polite"></div>
-    <div class="auth-links">
-      <button type="button" id="authToggle">Create an account</button>
-      <button type="button" id="authForgot">Forgot password?</button>
-    </div>
-  </section>
-</div>
 
 <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
 
@@ -942,7 +908,6 @@ button {
         </div>
 
         <div class="sidebar-bottom">
-            <button class="new-chat" id="signInBtn" type="button" style="margin-bottom:14px;">↗ &nbsp; Sign in / Create account</button>
             <div class="section-label">YOUR AI SPACE</div>
             <div class="status-card">
                 <div class="status-title">✦ Made to explore</div>
@@ -973,10 +938,9 @@ button {
                 </div>
             </div>
 
-            <div class="account-controls">
-                <span class="account-email" id="accountEmail"></span>
-                <button class="auth-secondary" id="logoutBtn" type="button" style="display:none;">Log out</button>
-                <div class="model-pill"><span class="model-dot"></span>MultiTwist assistant</div>
+            <div class="model-pill">
+                <span class="model-dot"></span>
+                MultiTwist assistant
             </div>
 
         </header>
@@ -1083,7 +1047,6 @@ button {
     </main>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 
@@ -1108,43 +1071,25 @@ let isSending = false;
  * Always create a fresh conversation ID when the page loads.
  * Older conversations remain saved in the Flask database and history list.
  */
-// Set these to the Project URL and publishable key from your Supabase dashboard.
-const SUPABASE_URL =https://fbzgybrgyayipdkvvgwk.supabase.co/;
-const SUPABASE_PUBLISHABLE_KEY = sb_publishable_4xzD5HPVZ9mtW2cpR02rcw_CwsR_gMU;
-const SUPABASE_CONFIGURED = /^https:\/\//i.test(SUPABASE_URL) &&
-    !SUPABASE_URL.includes("YOUR_SUPABASE") &&
-    !!SUPABASE_PUBLISHABLE_KEY &&
-    !SUPABASE_PUBLISHABLE_KEY.includes("YOUR_SUPABASE");
+// Keep a separate visitor ID for this browser profile. The Flask backend
+// must use this ID to filter chat history and authorize chat operations.
+let visitorId = localStorage.getItem("multitwist_visitor_id");
 
-// Keep the public website usable even before Supabase is configured.
-const unavailableAuth = async () => ({
-    data: { session: null },
-    error: new Error("Supabase is not configured. Add your project URL and publishable key first.")
-});
-const supabaseClient = SUPABASE_CONFIGURED
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
-    : {
-        auth: {
-            getSession: async () => ({ data: { session: null }, error: null }),
-            onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
-            signInWithPassword: unavailableAuth,
-            signUp: unavailableAuth,
-            resetPasswordForEmail: unavailableAuth,
-            updateUser: unavailableAuth,
-            signOut: async () => ({ error: null })
-        }
-    };
-let currentSession = null;
-let authMode = "login";
+if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("multitwist_visitor_id", visitorId);
+}
+
 let currentChatId = crypto.randomUUID();
 let chatList = [];
+
 localStorage.setItem("multitwist_current_chat", currentChatId);
 
-async function authHeaders(extraHeaders = {}) {
-    const { data, error } = await supabaseClient.auth.getSession();
-    if (error || !data.session) throw new Error("Please log in again to continue.");
-    currentSession = data.session;
-    return { ...extraHeaders, "Authorization": `Bearer ${data.session.access_token}` };
+function visitorHeaders(extraHeaders = {}) {
+    return {
+        ...extraHeaders,
+        "X-Visitor-ID": visitorId
+    };
 }
 
 /* MOBILE MENU */
@@ -1184,7 +1129,7 @@ async function refreshChatHistory() {
 
     try {
         const response = await fetch("/api/chats", {
-            headers: await authHeaders()
+            headers: visitorHeaders()
         });
         const data = await response.json();
 
@@ -1261,7 +1206,7 @@ async function openChat(chatId) {
     try {
         const response = await fetch(
             `/api/chats/${encodeURIComponent(chatId)}`,
-            { headers: await authHeaders() }
+            { headers: visitorHeaders() }
         );
 
         const data = await response.json();
@@ -1304,7 +1249,7 @@ async function renameChat(chatId, oldTitle) {
             `/api/chats/${encodeURIComponent(chatId)}`,
             {
                 method: "PATCH",
-                headers: await authHeaders({
+                headers: visitorHeaders({
                     "Content-Type": "application/json"
                 }),
                 body: JSON.stringify({ title })
@@ -1336,7 +1281,7 @@ async function deleteChat(chatId, title) {
             `/api/chats/${encodeURIComponent(chatId)}`,
             {
                 method: "DELETE",
-                headers: await authHeaders()
+                headers: visitorHeaders()
             }
         );
 
@@ -1608,13 +1553,9 @@ async function sendMessage() {
     setSelectedFile(null);
 
     try {
-        const { data: sessionData } = await supabaseClient.auth.getSession();
-        const optionalHeaders = sessionData.session
-            ? { "Authorization": `Bearer ${sessionData.session.access_token}` }
-            : {};
         const response = await fetch("/chat", {
             method: "POST",
-            headers: optionalHeaders,
+            headers: visitorHeaders(),
             body: formData
         });
 
@@ -1737,144 +1678,7 @@ document.getElementById("chatNav").addEventListener("click", () => {
  * The welcome screen appears every time the page is reopened.
  * Previously saved conversations remain accessible from CHAT HISTORY.
  */
-// Supabase authentication UI and session lifecycle.
-const authGate = document.getElementById("authGate");
-const authForm = document.getElementById("authForm");
-const authEmail = document.getElementById("authEmail");
-const authPassword = document.getElementById("authPassword");
-const authTitle = document.getElementById("authTitle");
-const authDescription = document.getElementById("authDescription");
-const authSubmit = document.getElementById("authSubmit");
-const authStatus = document.getElementById("authStatus");
-const authToggle = document.getElementById("authToggle");
-const authForgot = document.getElementById("authForgot");
-const logoutBtn = document.getElementById("logoutBtn");
-const accountEmail = document.getElementById("accountEmail");
-const signInBtn = document.getElementById("signInBtn");
-const authClose = document.getElementById("authClose");
-
-function openAuthModal(mode = "login") {
-    setAuthMode(mode);
-    authGate.style.display = "grid";
-    authStatus.textContent = "";
-    authEmail.focus();
-}
-
-function closeAuthModal() {
-    if (authMode !== "reset") authGate.style.display = "none";
-}
-
-signInBtn.addEventListener("click", () => {
-    openAuthModal("login");
-    if (!SUPABASE_CONFIGURED) {
-        authStatus.style.color = "#ffb4b4";
-        authStatus.textContent = "Supabase is not configured yet. Add your Project URL and publishable key in this HTML first.";
-    }
-});
-authClose.addEventListener("click", closeAuthModal);
-authGate.addEventListener("click", event => {
-    if (event.target === authGate) closeAuthModal();
-});
-document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeAuthModal();
-});
-
-function setAuthMode(mode) {
-    authMode = mode;
-    authStatus.textContent = "";
-    const reset = mode === "reset";
-    authTitle.textContent = reset ? "Choose a new password" : (mode === "signup" ? "Create your account" : "Welcome back");
-    authDescription.textContent = reset ? "Enter a new password for your account." : (mode === "signup" ? "Sign up to keep your conversations private across devices." : "Log in to access your private conversations.");
-    authSubmit.textContent = reset ? "Update password" : (mode === "signup" ? "Create account" : "Log in");
-    authPassword.placeholder = reset ? "New password (at least 8 characters)" : "Password (at least 8 characters)";
-    authPassword.autocomplete = reset ? "new-password" : (mode === "signup" ? "new-password" : "current-password");
-    authPassword.required = true;
-    authToggle.style.display = reset ? "none" : "";
-    authForgot.style.display = (mode === "signup" || reset) ? "none" : "";
-    authToggle.textContent = mode === "signup" ? "Already have an account? Log in" : "Create an account";
-}
-
-authToggle.addEventListener("click", () => setAuthMode(authMode === "signup" ? "login" : "signup"));
-authForgot.addEventListener("click", async () => {
-    const email = authEmail.value.trim();
-    if (!email) { authStatus.textContent = "Enter your email address first."; return; }
-    authStatus.style.color = "#a9f0d0";
-    authStatus.textContent = "Sending password-reset email…";
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
-    authStatus.style.color = error ? "#ffb4b4" : "#a9f0d0";
-    authStatus.textContent = error ? error.message : "If that account exists, a password-reset email has been sent.";
-});
-
-authForm.addEventListener("submit", async event => {
-    event.preventDefault();
-    authSubmit.disabled = true;
-    authStatus.style.color = "#a9f0d0";
-    authStatus.textContent = "Please wait…";
-    const email = authEmail.value.trim();
-    const password = authPassword.value;
-    let result;
-    try {
-        if (!SUPABASE_CONFIGURED) {
-            throw new Error("Supabase is not configured yet. Add your Project URL and publishable key in this HTML first.");
-        }
-        if (authMode === "signup") {
-            result = await supabaseClient.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
-            if (!result.error && !result.data.session) {
-                authStatus.textContent = "Account created. Check your email to verify it, then log in.";
-                authStatus.style.color = "#a9f0d0";
-                return;
-            }
-        } else if (authMode === "reset") {
-            result = await supabaseClient.auth.updateUser({ password });
-        } else {
-            result = await supabaseClient.auth.signInWithPassword({ email, password });
-        }
-        if (result.error) throw result.error;
-        if (result.data.session || authMode === "reset") {
-            authStatus.textContent = authMode === "reset" ? "Password updated. Please log in with your new password." : "Signed in successfully.";
-            if (authMode === "reset") { await supabaseClient.auth.signOut(); setAuthMode("login"); }
-        }
-    } catch (error) {
-        authStatus.style.color = "#ffb4b4";
-        authStatus.textContent = error.message || "Authentication failed. Please try again.";
-    } finally {
-        authSubmit.disabled = false;
-    }
-});
-
-logoutBtn.addEventListener("click", async () => {
-    await supabaseClient.auth.signOut();
-});
-
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    currentSession = session;
-    if (event === "PASSWORD_RECOVERY") {
-        setAuthMode("reset");
-        authGate.style.display = "grid";
-        return;
-    }
-
-    if (session) {
-        authGate.style.display = "none";
-        accountEmail.textContent = session.user.email || "Signed in";
-        logoutBtn.style.display = "inline-block";
-        signInBtn.style.display = "none";
-        authStatus.textContent = "";
-        if (SUPABASE_CONFIGURED) refreshChatHistory();
-    } else {
-        // Public visitors can use the AI without an account; saved history
-        // and account-specific history controls remain sign-in features.
-        authGate.style.display = "none";
-        accountEmail.textContent = "";
-        logoutBtn.style.display = "none";
-        signInBtn.style.display = "block";
-        chatList = [];
-        document.getElementById("chatHistory").innerHTML =
-            '<div class="history-empty">Sign in to save and revisit chats.</div>';
-    }
-});
-
-// Do not call chat APIs until a verified Supabase session is available.
+refreshChatHistory();
 </script>
 
 </body>
