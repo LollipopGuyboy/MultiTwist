@@ -21,6 +21,8 @@ app = Flask(__name__)
 
 SERPER_API_KEY = os.environ.get("SERPER_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
+SUPABASE_PUBLISHABLE_KEY = os.environ.get("SUPABASE_PUBLISHABLE_KEY") or os.environ.get("SUPABASE_ANON_KEY")
 
 MODEL_NAME = "google/gemma-3-4b-it"
 
@@ -79,18 +81,39 @@ def init_db():
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
 
-def get_visitor_id():
-    """Read the browser's random visitor ID supplied by the updated frontend.
-
-    This separates casual browser profiles, but it is not equivalent to a
-    login: anyone who obtains another visitor ID could impersonate that profile.
-    Use real authentication for strong account-level privacy.
-    """
-    visitor_id = (request.headers.get("X-Visitor-ID") or "").strip()
-    try:
-        return str(uuid.UUID(visitor_id))
-    except (ValueError, AttributeError, TypeError):
+def get_authenticated_user_id():
+    """Validate the Supabase access token with Supabase Auth and return its user UUID."""
+    if not SUPABASE_URL or not SUPABASE_PUBLISHABLE_KEY:
         return None
+    authorization = request.headers.get("Authorization", "")
+    if not authorization.startswith("Bearer "):
+        return None
+    token = authorization[7:].strip()
+    if not token:
+        return None
+    try:
+        response = requests.get(
+            f"{SUPABASE_URL}/auth/v1/user",
+            headers={
+                "apikey": SUPABASE_PUBLISHABLE_KEY,
+                "Authorization": f"Bearer {token}",
+            },
+            timeout=8,
+        )
+        if response.status_code != 200:
+            return None
+        user = response.json()
+        user_id = user.get("id") if isinstance(user, dict) else None
+        return str(uuid.UUID(user_id)) if user_id else None
+    except (requests.RequestException, ValueError, TypeError):
+        return None
+
+
+def require_authenticated_user():
+    user_id = get_authenticated_user_id()
+    if not user_id:
+        return None, (jsonify({"error": "Please log in again to continue."}), 401)
+    return user_id, None
 
 
 def ensure_chat(chat_id, owner_id, title="New conversation"):
@@ -375,9 +398,9 @@ def home():
 
 @app.route("/api/chats", methods=["GET"])
 def list_chats():
-    owner_id = get_visitor_id()
-    if not owner_id:
-        return jsonify({"error": "Missing or invalid visitor ID. Refresh the page and try again."}), 400
+    owner_id, auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
     with db_connect() as db:
         rows = db.execute(
             "SELECT id, title, created_at, updated_at FROM chats WHERE owner_id = ? ORDER BY updated_at DESC",
@@ -388,9 +411,9 @@ def list_chats():
 
 @app.route("/api/chats/<chat_id>", methods=["GET"])
 def load_chat(chat_id):
-    owner_id = get_visitor_id()
-    if not owner_id:
-        return jsonify({"error": "Missing or invalid visitor ID."}), 400
+    owner_id, auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
     with db_connect() as db:
         chat = db.execute(
             "SELECT id, title, created_at, updated_at FROM chats WHERE id = ? AND owner_id = ?",
@@ -408,9 +431,9 @@ def load_chat(chat_id):
 
 @app.route("/api/chats/<chat_id>", methods=["PATCH"])
 def rename_chat(chat_id):
-    owner_id = get_visitor_id()
-    if not owner_id:
-        return jsonify({"error": "Missing or invalid visitor ID."}), 400
+    owner_id, auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
     data = request.get_json(silent=True) or {}
     title = re.sub(r"\s+", " ", str(data.get("title", "")).strip())[:80]
     if not title:
@@ -428,9 +451,9 @@ def rename_chat(chat_id):
 
 @app.route("/api/chats/<chat_id>", methods=["DELETE"])
 def delete_chat(chat_id):
-    owner_id = get_visitor_id()
-    if not owner_id:
-        return jsonify({"error": "Missing or invalid visitor ID."}), 400
+    owner_id, auth_error = require_authenticated_user()
+    if auth_error:
+        return auth_error
     with db_connect() as db:
         owned = db.execute(
             "SELECT id FROM chats WHERE id = ? AND owner_id = ?",
@@ -620,9 +643,9 @@ def chat():
             )
         }), 503
 
-    owner_id = get_visitor_id()
-    if not owner_id:
-        return jsonify({"reply": "Your browser ID is missing. Refresh the page and try again."}), 400
+    owner_id, auth_error = require_authenticated_user()
+    if auth_error:
+        return jsonify({"reply": "Please log in again to continue."}), 401
 
     message = request.form.get("message", "").strip()
     uploaded_file = request.files.get("image")
@@ -817,6 +840,7 @@ def health():
         "status": "ok",
         "app": "MultiTwist AI",
         "openrouter_configured": bool(OPENROUTER_API_KEY),
+        "supabase_auth_configured": bool(SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY),
         "web_search_configured": bool(SERPER_API_KEY)
     })
 
