@@ -156,9 +156,12 @@ def search_web(query):
 # ==================================================
 
 CURRENT_INFO_PATTERNS = [
+    # Explicit freshness/time language.
     r"\bcurrent(?:ly)?\b",
     r"\bright now\b",
     r"\btoday\b",
+    r"\byesterday\b",
+    r"\btomorrow\b",
     r"\blatest\b",
     r"\brecent(?:ly)?\b",
     r"\bthis week\b",
@@ -167,87 +170,76 @@ CURRENT_INFO_PATTERNS = [
     r"\bnewest\b",
     r"\bbreaking\b",
     r"\blive\b",
-    r"\b202[6-9]\b",
-    r"\b203\d\b",
-    r"\bwho is the\b",
-    r"\bwho's the\b",
+    r"\b20(?:2[4-9]|3\d)\b",
+    # Facts that commonly change over time.
+    r"\bwho is (?:the )?(?:prime minister|president|chief minister|ceo|leader|owner|captain|coach)\b",
     r"\bprime minister\b",
     r"\bpresident of\b",
     r"\bchief minister\b",
-    r"\bcurrent ceo\b",
+    r"\bceo of\b",
     r"\bstock price\b",
     r"\bshare price\b",
     r"\bbitcoin price\b",
+    r"\bprice of\b",
+    r"\bhow much does\b",
     r"\bweather\b",
     r"\bnews\b",
-    r"\belection results\b",
+    r"\belection results?\b",
     r"\bipl\b",
     r"\bmatch score\b",
-    r"\bsports results\b",
+    r"\bsports results?\b",
     r"\brelease date\b",
     r"\bhas .* announced\b",
     r"\bwho won\b",
     r"\bwhat happened\b",
-    r"\bupdates about\b",
-    r"\bprice of\b",
-    r"\bhow much does\b",
-    r"\bwhen is the next\b"
+    r"\bupdates? about\b",
+    r"\bwhen is the next\b",
+    r"\bavailable now\b",
+    r"\bcurrent version\b",
+    r"\blatest version\b",
+    r"\bversion of (?:python|flask|react|windows|android|ios|chrome)\b",
 ]
 
 
 def needs_web_search(message):
-    """
-    Decide whether a question probably requires current
-    information or web research.
-    """
+    """Return True for explicit research requests or questions likely to need fresh facts.
 
+    Stable educational questions and casual chat do not trigger a search by default.
+    """
     text = message.lower().strip()
-
     if not text:
         return False
 
-    # Explicit requests to search or verify.
     explicit_search_patterns = [
-        r"\bsearch the web\b",
+        r"\bsearch (?:the )?web\b",
         r"\bsearch online\b",
         r"\blook it up\b",
         r"\bverify online\b",
         r"\bfact.?check\b",
         r"\bfind sources\b",
         r"\bwith sources\b",
-        r"\baccording to the latest\b"
-    ]
-
-    if any(
-        re.search(pattern, text)
-        for pattern in explicit_search_patterns
-    ):
-        return True
-
-    # Time-sensitive topics.
-    if any(
-        re.search(pattern, text)
-        for pattern in CURRENT_INFO_PATTERNS
-    ):
-        return True
-
-    # Longer questions are more likely to need research,
-    # but length alone is not a perfect indicator.
-    research_patterns = [
-        r"\bcompare .* latest\b",
+        r"\bcite sources\b",
+        r"\baccording to the latest\b",
         r"\bresearch\b",
-        r"\bcurrent situation\b",
-        r"\bwhat are the latest\b",
-        r"\bwhat is happening in\b"
     ]
-
-    if any(
-        re.search(pattern, text)
-        for pattern in research_patterns
-    ):
+    if any(re.search(pattern, text) for pattern in explicit_search_patterns):
         return True
 
-    return False
+    if any(re.search(pattern, text) for pattern in CURRENT_INFO_PATTERNS):
+        return True
+
+    # These requests usually depend on current products, services, or public facts.
+    research_patterns = [
+        r"\bcompare .*\b(?:models?|products?|phones?|laptops?|services?|plans?)\b",
+        r"\bwhich (?:is|are) the best\b",
+        r"\bbest (?:phone|laptop|app|website|ai|tool|service|course|place|restaurant)\b",
+        r"\brecommend (?:a |an )?(?:phone|laptop|app|website|ai|tool|service|course|place|restaurant)\b",
+        r"\bwho is [a-z][a-z .'-]{1,60}\??$",
+        r"\b(?:tell me about|information about) (?:[A-Z][\w.-]+|[a-z]+ (?:company|person|app|website|product))",
+        r"\b(?:price|cost|availability|reviews?) of\b",
+        r"\bwhat is happening in\b",
+    ]
+    return any(re.search(pattern, text, re.IGNORECASE) for pattern in research_patterns)
 
 
 # ==================================================
@@ -508,6 +500,9 @@ PERSONALITY:
 - Do not invent facts, sources, quotations or dates.
 
 CURRENT INFORMATION:
+- The current date is supplied by the server; do not assume your training data is up to date.
+- If the user asks about changing facts, public figures in current roles, news, prices, releases, versions, sports, or current events, rely on supplied web search results.
+- If no search results are supplied for a current question, say you could not verify it; do not guess.
 - When web search results are supplied, use them to answer current-information questions.
 - Prefer relevant, reliable sources and information with a clear recent date.
 - Search snippets can be incomplete or outdated. Do not treat a snippet as unquestionable truth.
